@@ -23,11 +23,13 @@ export class LoginComponent implements AfterViewInit {
   colunaImg: string = 'assets/Coluna.png';
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      const elems = document.querySelectorAll('.modal');
-      M.Modal.init(elems);
-      console.log('Modal TCLE inicializado com sucesso');
-    });
+    if (typeof window !== 'undefined'){
+      setTimeout(() => {
+        const elems = document.querySelectorAll('.modal');
+        M.Modal.init(elems);
+        console.log('Modal TCLE inicializado com sucesso');
+      });
+    }
   }
 
 
@@ -66,16 +68,18 @@ export class LoginComponent implements AfterViewInit {
   }
 
   abrirTermo() {
-    const modalElement = document.getElementById('modalTermo');
-    if (modalElement) {
-      let modalInstance = M.Modal.getInstance(modalElement);
-      if (!modalInstance) {
-        modalInstance = M.Modal.init(modalElement);
+    if (typeof window !== 'undefined'){
+      const modalElement = document.getElementById('modalTermo');
+      if (modalElement) {
+        let modalInstance = M.Modal.getInstance(modalElement);
+        if (!modalInstance) {
+          modalInstance = M.Modal.init(modalElement);
+        }
+        modalInstance.open();
+        console.log('Modal TCLE aberto');
+      } else {
+        console.error('Modal não encontrado.');
       }
-      modalInstance.open();
-      console.log('Modal TCLE aberto');
-    } else {
-      console.error('Modal não encontrado.');
     }
   }
 

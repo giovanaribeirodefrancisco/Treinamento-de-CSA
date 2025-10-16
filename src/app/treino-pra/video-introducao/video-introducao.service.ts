@@ -46,24 +46,29 @@ export class VideoIntroducaoService {
    * Método para verificação local (fallback caso não tenha conexão)
    */
   verificarVideoAssistidoLocal(): boolean {
-    try {
-      const videoStatus = localStorage.getItem('videoIntroducaoAssistido');
-      return videoStatus === 'true';
-    } catch (error) {
-      console.error('Erro ao acessar localStorage:', error);
-      return false;
+    if (typeof winodw !== 'undefined'){
+      try {
+        const videoStatus = localStorage.getItem('videoIntroducaoAssistido');
+        return videoStatus === 'true';
+      } catch (error) {
+        console.error('Erro ao acessar localStorage:', error);
+        return false;
+      }
     }
+    return false; // fallback para SSR
   }
 
   /**
    * Marca localmente que o vídeo foi assistido
    */
   marcarVideoComoAssistidoLocal(): void {
-    try {
-      localStorage.setItem('videoIntroducaoAssistido', 'true');
-      localStorage.setItem('dataVideoAssistido', new Date().toISOString());
-    } catch (error) {
-      console.error('Erro ao salvar no localStorage:', error);
+    if (typeof window !== 'undefined'){
+      try {
+        localStorage.setItem('videoIntroducaoAssistido', 'true');
+        localStorage.setItem('dataVideoAssistido', new Date().toISOString());
+      } catch (error) {
+        console.error('Erro ao salvar no localStorage:', error);
+      }
     }
   }
 
@@ -71,6 +76,8 @@ export class VideoIntroducaoService {
    * Método combinado que tenta servidor primeiro, depois local
    */
   async verificarStatusVideo(): Promise<boolean> {
+    if (typeof window === 'undefined') return false;
+
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -90,6 +97,9 @@ export class VideoIntroducaoService {
    * Método combinado para marcar como assistido
    */
   async marcarComoAssistido(): Promise<void> {
+    if (typeof window === 'undefined') return; // SSR fallback
+
+
     const token = localStorage.getItem('token');
 
     // Sempre marca localmente primeiro

@@ -91,7 +91,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.push(usuarioSub);
 
     // Carrega dados iniciais do usuario
-    this.usuarioLogado = this.authservice.getusuarioLogado();
+    if(typeof window !== 'undefined'){
+      this.usuarioLogado = this.authservice.getusuarioLogado();
+    }
 
     //this.authservice.initAuth();
     /*this.authservice.mostrarMenuEmitter.subscribe(

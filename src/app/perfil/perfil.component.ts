@@ -67,49 +67,54 @@ export class PerfilComponent implements OnInit {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        // Comprime a imagem
-        this.comprimirImagem(e.target.result, 300, 300, (imagemComprimida) => {
-          this.usuario.fotoPerfil = imagemComprimida;
-          console.log('Foto comprimida, tamanho:', imagemComprimida.length);
-        });
-      };
-      reader.readAsDataURL(file);
+      if (typeof window !== 'undefined'){
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          // Comprime a imagem
+          this.comprimirImagem(e.target.result, 300, 300, (imagemComprimida) => {
+            this.usuario.fotoPerfil = imagemComprimida;
+            console.log('Foto comprimida, tamanho:', imagemComprimida.length);
+          });
+        };
+        reader.readAsDataURL(file);
+      }
     }
   }
 
   comprimirImagem(src: string, maxWidth: number, maxHeight: number, callback: (result: string) => void): void {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      let width = img.width;
-      let height = img.height;
-
-      // Calcula novas dimensões mantendo proporção
-      if (width > height) {
-        if (width > maxWidth) {
-          height = (height * maxWidth) / width;
-          width = maxWidth;
+    
+    if (typeof window !== 'undefined'){
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+  
+        // Calcula novas dimensões mantendo proporção
+        if (width > height) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height;
+            height = maxHeight;
+          }
         }
-      } else {
-        if (height > maxHeight) {
-          width = (width * maxHeight) / height;
-          height = maxHeight;
-        }
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0, width, height);
-
-      // Converte para base64 com qualidade reduzida
-      const imagemComprimida = canvas.toDataURL('image/jpeg', 0.7);
-      callback(imagemComprimida);
-    };
-    img.src = src;
+  
+        canvas.width = width;
+        canvas.height = height;
+  
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+  
+        // Converte para base64 com qualidade reduzida
+        const imagemComprimida = canvas.toDataURL('image/jpeg', 0.7);
+        callback(imagemComprimida);
+      };
+      img.src = src;
+    }
   }
 
   abrirModalSenha(): void {
