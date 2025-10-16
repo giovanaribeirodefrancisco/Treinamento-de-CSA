@@ -45,8 +45,8 @@ export class VideoIntroducaoService {
   /**
    * Método para verificação local (fallback caso não tenha conexão)
    */
-  verificarVideoAssistidoLocal(): boolean {
-    if (typeof winodw !== 'undefined'){
+  verificarVideoAssistidoLocal(): boolean { 
+    if (typeof window !== 'undefined'){
       try {
         const videoStatus = localStorage.getItem('videoIntroducaoAssistido');
         return videoStatus === 'true';

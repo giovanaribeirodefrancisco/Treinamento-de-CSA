@@ -81,8 +81,8 @@ export class EnunciadosComponent implements OnInit, OnChanges {
   }
 
   abrirFormulario(){
-    if (typeof window !== 'underfined'){
+    if (typeof window !== 'undefined'){
       window.open('https://forms.gle/G8vHfJTT3s427W5x9', '_blank');
     }
   }
-}
+} 
