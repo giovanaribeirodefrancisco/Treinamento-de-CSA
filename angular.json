@@ -40,8 +40,10 @@
               "node_modules/materialize-css/dist/js/materialize.min.js"
             ],
             "server": "src/main.server.ts",
-            "prerender": false,
-            "ssr": false
+            "prerender": true,
+            "ssr": {
+              "entry": "server.ts"
+            }
           },
           "configurations": {
             "production": {
@@ -54,7 +56,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kB",
-                  "maximumError": "5kB"
+                  "maximumError": "4kB"
                 }
               ],
               "outputHashing": "all"
