@@ -101,9 +101,11 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/materialize-css/dist/css/materialize.min.css"
             ],
             "scripts": [
+              "node_modules/materialize-css/dist/js/materialize.min.js"
             ]
           }
         }
