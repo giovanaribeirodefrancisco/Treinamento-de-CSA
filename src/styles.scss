@@ -1,0 +1,33 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Remove margem e padding padrão */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+app-root {
+  display: block;
+  width: 100%;
+}
+
+.container {
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0;
+}
+
+nav {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-bottom: none !important;
+  background-image: none !important;
+}

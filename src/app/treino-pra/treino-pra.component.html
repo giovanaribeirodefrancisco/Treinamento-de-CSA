@@ -1,0 +1,553 @@
+<!-- Tela de loading enquanto verifica status do vídeo -->
+<div class="loading-screen" *ngIf="carregandoStatusVideo">
+  <div class="loading-content">
+    <div class="spinner"></div>
+    <p>Preparando treinamento prático...</p>
+  </div>
+</div>
+
+<!-- Vídeo introdutório (mostrado apenas na primeira vez) -->
+<app-video-introducao
+  *ngIf="mostrarVideoIntroducao && !carregandoStatusVideo"
+  (videoCompleto)="onVideoIntroducaoConcluida()">
+</app-video-introducao>
+
+
+
+<div class="container-principal" *ngIf="!mostrarVideoIntroducao && !carregandoStatusVideo">
+
+  <div class="container-principal">
+    <!-- CORREÇÃO PRINCIPAL: Adicionar o componente de enunciados aqui -->
+    <div class="enunciados-container" *ngIf="etapa !== 23">
+      <app-enunciados [etapa]="etapa"></app-enunciados>
+    </div>
+
+    <div class="prancha" *ngIf="etapa !== 23">
+      <br>
+      <div class="itens-container">
+        <!--Linha 1-->
+        <div class="item" style="grid-row: 1; grid-column: 1;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Eu')}"
+        [attr.data-texto]="'Eu'">
+          <img src="assets/imagem/pictogramasTextoGrande/1A.png"
+              alt="Eu"
+              (click)="mostrarTextoESom('Eu')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 2;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Querer')}"
+        [attr.data-texto]="'Querer'">
+          <img src="assets/imagem/pictogramasTextoGrande/1B.png"
+              alt="Querer"
+              (click)="mostrarTextoESom('Querer')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 3;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Estar')}"
+        [attr.data-texto]="'Estar'">
+          <img src="assets/imagem/pictogramasTextoGrande/1C.png"
+              alt="Estar"
+              (click)="mostrarTextoESom('Estar')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 4;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Ser')}"
+        [attr.data-texto]="'Ser'">
+          <img src="assets/imagem/pictogramasTextoGrande/1D.png"
+              alt="Ser"
+              (click)="mostrarTextoESom('Ser')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 5;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Ter')}"
+        [attr.data-texto]="'Ter'">
+          <img src="assets/imagem/pictogramasTextoGrande/1E.png"
+              alt="Ter"
+              (click)="mostrarTextoESom('Ter')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 6;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Quando')}"
+        [attr.data-texto]="'Quando'">
+          <img src="assets/imagem/pictogramasTextoGrande/1F.png"
+              alt="Quando"
+              (click)="mostrarTextoESom('Quando')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 7;"
+        [ngClass]="{'item-selecionado': itemSelecionado('O que')}"
+        [attr.data-texto]="'O que'">
+          <img src="assets/imagem/pictogramasTextoGrande/1G.png"
+              alt="O que"
+              (click)="mostrarTextoESom('O que')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 8;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Onde')}"
+        [attr.data-texto]="'Onde'">
+          <img src="assets/imagem/pictogramasTextoGrande/1H.png"
+              alt="Onde"
+              (click)="mostrarTextoESom('Onde')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 9;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Quem')}"
+        [attr.data-texto]="'Quem'">
+          <img src="assets/imagem/pictogramasTextoGrande/1I.png"
+              alt="Quem"
+              (click)="mostrarTextoESom('Quem')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 1; grid-column: 10;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Qual')}"
+        [attr.data-texto]="'Qual'">
+          <img src="assets/imagem/pictogramasTextoGrande/1J.png"
+              alt="Qual"
+              (click)="mostrarTextoESom('Qual')"
+              style="cursor: pointer;" />
+        </div>
+
+        <!--Linha 2-->
+        <div class="item" style="grid-row: 2; grid-column: 1;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Você')}"
+        [attr.data-texto]="'Você'">
+          <img src="assets/imagem/pictogramasTextoGrande/2A.png"
+              alt="Você"
+              (click)="mostrarTextoESom('Você')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 2;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Nós')}"
+        [attr.data-texto]="'Nós'">
+          <img src="assets/imagem/pictogramasTextoGrande/2B.png"
+              alt="Nós"
+              (click)="mostrarTextoESom('Nós')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 3;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Ir')}"
+        [attr.data-texto]="'Ir'">
+          <img src="assets/imagem/pictogramasTextoGrande/2C.png"
+              alt="Ir"
+              (click)="mostrarTextoESom('Ir')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 4;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Vir')}"
+        [attr.data-texto]="'Vir'">
+          <img src="assets/imagem/pictogramasTextoGrande/2D.png"
+              alt="Vir"
+              (click)="mostrarTextoESom('Vir')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 5;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Jogar')}"
+        [attr.data-texto]="'Jogar'">
+          <img src="assets/imagem/pictogramasTextoGrande/2E.png"
+              alt="Jogar"
+              (click)="mostrarTextoESom('Jogar')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 6;"
+        [ngClass]="{'item-selecionado': itemSelecionado('com')}"
+        [attr.data-texto]="'com'">
+          <img src="assets/imagem/pictogramasTextoGrande/2F.png"
+              alt="com"
+              (click)="mostrarTextoESom('com')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 7;"
+        [ngClass]="{'item-selecionado': itemSelecionado('mas')}"
+        [attr.data-texto]="'mas'">
+          <img src="assets/imagem/pictogramasTextoGrande/2G.png"
+              alt="mas"
+              (click)="mostrarTextoESom('mas')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 8;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Não')}"
+        [attr.data-texto]="'Não'">
+          <img src="assets/imagem/pictogramasTextoGrande/2H.png"
+              alt="Não"
+              (click)="mostrarTextoESom('Não')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 9;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Sim')}"
+        [attr.data-texto]="'Sim'">
+          <img src="assets/imagem/pictogramasTextoGrande/2I.png"
+              alt="Sim"
+              (click)="mostrarTextoESom('Sim')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 2; grid-column: 10;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Por que')}"
+        [attr.data-texto]="'Por que'">
+          <img src="assets/imagem/pictogramasTextoGrande/2J.png"
+              alt="Por que"
+              (click)="mostrarTextoESom('Por que')"
+              style="cursor: pointer;" />
+        </div>
+
+        <!--Linha 3-->
+        <div class="item" style="grid-row: 3; grid-column: 1;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Ele')}"
+        [attr.data-texto]="'Ele'">
+          <img src="assets/imagem/pictogramasTextoGrande/3A.png"
+              alt="Ele"
+              (click)="mostrarTextoESom('Ele')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 2;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Ela')}"
+        [attr.data-texto]="'Ela'">
+          <img src="assets/imagem/pictogramasTextoGrande/3B.png"
+              alt="Ela"
+              (click)="mostrarTextoESom('Ela')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 3;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Abrir')}"
+        [attr.data-texto]="'Abrir'">
+          <img src="assets/imagem/pictogramasTextoGrande/3C.png"
+              alt="Abrir"
+              (click)="mostrarTextoESom('Abrir')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 4;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Brincar')}"
+        [attr.data-texto]="'Brincar'">
+          <img src="assets/imagem/pictogramasTextoGrande/3D.png"
+              alt="Brincar"
+              (click)="mostrarTextoESom('Brincar')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 5;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Pegar')}"
+        [attr.data-texto]="'Pegar'">
+          <img src="assets/imagem/pictogramasTextoGrande/3E.png"
+              alt="Pegar"
+              (click)="mostrarTextoESom('Pegar')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 6;"
+        [ngClass]="{'item-selecionado': itemSelecionado('De')}"
+        [attr.data-texto]="'De'">
+          <img src="assets/imagem/pictogramasTextoGrande/3F.png"
+              alt="De"
+              (click)="mostrarTextoESom('De')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 7;"
+        [ngClass]="{'item-selecionado': itemSelecionado('para')}"
+        [attr.data-texto]="'para'">
+          <img src="assets/imagem/pictogramasTextoGrande/3G.png"
+              alt="para"
+              (click)="mostrarTextoESom('para')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 8;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Mais')}"
+        [attr.data-texto]="'Mais'">
+          <img src="assets/imagem/pictogramasTextoGrande/3H.png"
+              alt="Mais"
+              (click)="mostrarTextoESom('Mais')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 9;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Agora')}"
+        [attr.data-texto]="'Agora'">
+          <img src="assets/imagem/pictogramasTextoGrande/3I.png"
+              alt="Agora"
+              (click)="mostrarTextoESom('Agora')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 3; grid-column: 10;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Depois')}"
+        [attr.data-texto]="'Depois'">
+          <img src="assets/imagem/pictogramasTextoGrande/3J.png"
+              alt="Depois"
+              (click)="mostrarTextoESom('Depois')"
+              style="cursor: pointer;" />
+        </div>
+
+        <!--Linha 4-->
+        <div class="item" style="grid-row: 4; grid-column: 1;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Eles')}"
+        [attr.data-texto]="'Eles'">
+          <img src="assets/imagem/pictogramasTextoGrande/4A.png"
+              alt="Eles"
+              (click)="mostrarTextoESom('Eles')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 2;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Elas')}"
+        [attr.data-texto]="'Elas'">
+          <img src="assets/imagem/pictogramasTextoGrande/4B.png"
+              alt="Elas"
+              (click)="mostrarTextoESom('Elas')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 3;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Comer')}"
+        [attr.data-texto]="'Comer'">
+          <img src="assets/imagem/pictogramasTextoGrande/4C.png"
+              alt="Comer"
+              (click)="mostrarTextoESom('Comer')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 4;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Sentir')}"
+        [attr.data-texto]="'Sentir'">
+          <img src="assets/imagem/pictogramasTextoGrande/4D.png"
+              alt="Sentir"
+              (click)="mostrarTextoESom('Sentir')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 5;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Fazer')}"
+        [attr.data-texto]="'Fazer'">
+          <img src="assets/imagem/pictogramasTextoGrande/4E.png"
+              alt="Fazer"
+              (click)="mostrarTextoESom('Fazer')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 6;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Entrar')}"
+        [attr.data-texto]="'Entrar'">
+          <img src="assets/imagem/pictogramasTextoGrande/4F.png"
+              alt="Entrar"
+              (click)="mostrarTextoESom('Entrar')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 7;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Aqui')}"
+        [attr.data-texto]="'Aqui'">
+          <img src="assets/imagem/pictogramasTextoGrande/4G.png"
+              alt="Aqui"
+              (click)="mostrarTextoESom('Aqui')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 8;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Ali')}"
+        [attr.data-texto]="'Ali'">
+          <img src="assets/imagem/pictogramasTextoGrande/4H.png"
+              alt="Ali"
+              (click)="mostrarTextoESom('Ali')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 9;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Embaixo')}"
+        [attr.data-texto]="'Embaixo'">
+          <img src="assets/imagem/pictogramasTextoGrande/4I.png"
+              alt="Embaixo"
+              (click)="mostrarTextoESom('Embaixo')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 4; grid-column: 10;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Em cima')}"
+        [attr.data-texto]="'Em cima'">
+          <img src="assets/imagem/pictogramasTextoGrande/4J.png"
+              alt="Em cima"
+              (click)="mostrarTextoESom('Em cima')"
+              style="cursor: pointer;" />
+        </div>
+
+        <!--Linha 5-->
+        <div class="item" style="grid-row: 5; grid-column: 1;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Meu ou Minha')}"
+        [attr.data-texto]="'Meu ou Minha'">
+          <img src="assets/imagem/pictogramasTextoGrande/5A.png"
+              alt="Meu ou Minha"
+              (click)="mostrarTextoESom('Meu ou Minha')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 2;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Seu ou Sua')}"
+        [attr.data-texto]="'Seu ou Sua'">
+          <img src="assets/imagem/pictogramasTextoGrande/5B.png"
+              alt="Seu ou Sua"
+              (click)="mostrarTextoESom('Seu ou Sua')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 3;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Beber')}"
+        [attr.data-texto]="'Beber'">
+          <img src="assets/imagem/pictogramasTextoGrande/5C.png"
+              alt="Beber"
+              (click)="mostrarTextoESom('Beber')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 4;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Acabar')}"
+        [attr.data-texto]="'Acabar'">
+          <img src="assets/imagem/pictogramasTextoGrande/5D.png"
+              alt="Acabar"
+              (click)="mostrarTextoESom('Acabar')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 5;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Parar')}"
+        [attr.data-texto]="'Parar'">
+          <img src="assets/imagem/pictogramasTextoGrande/5E.png"
+              alt="Parar"
+              (click)="mostrarTextoESom('Parar')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 6;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Sair')}"
+        [attr.data-texto]="'Sair'">
+          <img src="assets/imagem/pictogramasTextoGrande/5F.png"
+              alt="Sair"
+              (click)="mostrarTextoESom('Sair')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 7;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Igual')}"
+        [attr.data-texto]="'Igual'">
+          <img src="assets/imagem/pictogramasTextoGrande/5G.png"
+              alt="Igual"
+              (click)="mostrarTextoESom('Igual')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 8;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Diferente')}"
+        [attr.data-texto]="'Diferente'">
+          <img src="assets/imagem/pictogramasTextoGrande/5H.png"
+              alt="Diferente"
+              (click)="mostrarTextoESom('Diferente')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 9;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Dentro')}"
+        [attr.data-texto]="'Dentro'">
+          <img src="assets/imagem/pictogramasTextoGrande/5I.png"
+              alt="Dentro"
+              (click)="mostrarTextoESom('Dentro')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 5; grid-column: 10;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Fora')}"
+        [attr.data-texto]="'Fora'">
+          <img src="assets/imagem/pictogramasTextoGrande/5J.png"
+              alt="Fora"
+              (click)="mostrarTextoESom('Fora')"
+              style="cursor: pointer;" />
+        </div>
+
+        <!--Linha 6-->
+        <div class="item" style="grid-row: 6; grid-column: 1;"
+        [ngClass]="{'item-selecionado': itemSelecionado('A')}"
+        [attr.data-texto]="'A'">
+          <img src="assets/imagem/pictogramasTextoGrande/6A.png"
+              alt="A"
+              (click)="mostrarTextoESom('A')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 2;"
+        [ngClass]="{'item-selecionado': itemSelecionado('E')}"
+        [attr.data-texto]="'E'">
+          <img src="assets/imagem/pictogramasTextoGrande/6B.png"
+              alt="E"
+              (click)="mostrarTextoESom('E')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 3;"
+        [ngClass]="{'item-selecionado': itemSelecionado('O')}"
+        [attr.data-texto]="'O'">
+          <img src="assets/imagem/pictogramasTextoGrande/6C.png"
+              alt="O"
+              (click)="mostrarTextoESom('O')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 4;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Gosta')}"
+        [attr.data-texto]="'Gosta'">
+          <img src="assets/imagem/pictogramasTextoGrande/6D.png"
+              alt="Gostar"
+              (click)="mostrarTextoESom('Gosta')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 5;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Assistir')}"
+        [attr.data-texto]="'Assistir'">
+          <img src="assets/imagem/pictogramasTextoGrande/6E.png"
+              alt="Assistir"
+              (click)="mostrarTextoESom('Assistir')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 6;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Passear')}"
+        [attr.data-texto]="'Passear'">
+          <img src="assets/imagem/pictogramasTextoGrande/6F.png"
+              alt="Passear"
+              (click)="mostrarTextoESom('Passear')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 7;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Ajuda')}"
+        [attr.data-texto]="'Ajuda'">
+          <img src="assets/imagem/pictogramasTextoGrande/6G.png"
+              alt="Ajuda"
+              (click)="mostrarTextoESom('Ajuda')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 8;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Conversar')}"
+        [attr.data-texto]="'Conversar'">
+          <img src="assets/imagem/pictogramasTextoGrande/6H.png"
+              alt="Conversar"
+              (click)="mostrarTextoESom('Conversar')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 9;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Pode')}"
+        [attr.data-texto]="'Pode'">
+          <img src="assets/imagem/pictogramasTextoGrande/6I.png"
+              alt="Pode"
+              (click)="mostrarTextoESom('Pode')"
+              style="cursor: pointer;" />
+        </div>
+        <div class="item" style="grid-row: 6; grid-column: 10;"
+        [ngClass]="{'item-selecionado': itemSelecionado('Outro')}"
+        [attr.data-texto]="'Outro'">
+          <img src="assets/imagem/pictogramasTextoGrande/6J.png"
+              alt="Outro"
+              (click)="mostrarTextoESom('Outro')"
+              style="cursor: pointer;" />
+        </div>
+      </div>
+
+      <div class="area-texto" *ngIf="textoExibido">
+        <p>{{ textoExibido }}</p>
+      </div>
+
+      <div class="feedback-mensagem" *ngIf="mostrarFeedback" [ngClass]="tipoFeedback">
+      {{ mensagemFeedback }}
+
+        <!--div *ngIf="isDicaUsadaNaEtapaAtual()" class="aviso-dica">
+            <div class="contador-dicas">
+            Dicas usadas: {{ getQuantidadeDicasUsadas(etapa) }}
+          </div>
+        </!--div-->
+
+      </div>
+
+      <div class="acoes">
+        <button class="btn-acao" style="background-color: rgb(255, 135, 23)" (click)="dica()">Dica</button>
+        <br>
+        <button class="btn-acao" style="background-color: rgb(201, 19, 242)" (click)="limparSelecao()">Limpar Seleção</button>
+        <br>
+        <button class="btn-acao" style="background-color: rgb(29, 191, 8)" (click)="finalizar()">Finalizar</button>
+      </div>
+    </div>
+
+     <!-- Tela de conclusão quando etapa === 23 -->
+    <div class="conclusao" *ngIf="etapa === 23">
+      <app-enunciados [etapa]="etapa"></app-enunciados>
+    </div>
+
+
+  </div>
+
+</div>

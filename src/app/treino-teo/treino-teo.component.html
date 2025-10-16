@@ -1,0 +1,42 @@
+<div class="training-container">
+  <div class="content-area">
+    <!-- Menu lateral esquerdo -->
+    <div class="sidebar-menu" [ngClass]="{'closed': !menuAberto}">
+      <div class="sidebar-header">
+        <div class="header-content">
+          <button class="sidebar-collapse-icon" (click)="toggleSidebar()">«</button>
+          <h4>Orientações para Professores</h4>
+        </div>
+      </div>
+
+      <div class="modules-list">
+        <div class="module" *ngFor="let module of modules">
+          <!--h4>{{module.title}}</!--h4-->
+          <ul>
+            <li *ngFor="let lesson of module.lessons"
+                [class.active]="lesson.active"
+                (click)="loadLesson(module.id, lesson.id)"
+                (keydown.enter)="loadLesson(module.id, lesson.id)"
+                tabindex="0">
+              {{lesson.title}}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conteúdo principal central -->
+    <div class="main-content" *ngIf="currentLesson">
+      <!-- Mostra apenas o título da aula sem "Aula X" -->
+      <h3 class="modulo">{{currentLesson.description}}</h3>
+      <!-- Remove este h3 já que o título agora está no h1 -->
+
+      <br><br>
+
+      <div class="lesson-content">
+        <h4>Conteúdo:</h4>
+        <div [innerHTML]="currentAulaConteudo" class="lesson-text"></div>
+      </div>
+    </div>
+  </div>
+</div>

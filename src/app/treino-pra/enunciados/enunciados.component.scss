@@ -1,0 +1,106 @@
+.container{
+  margin: 85px auto;
+  //margin-left: 50px;
+  width: 90%;
+  max-width: 1200px;
+}
+
+h1, p {
+  margin-top: 0;
+}
+
+section, app-enunciado {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/*.conclusao {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 34px;
+}*/
+
+.conclusao {
+  text-align: center;
+  margin: 50px auto;
+  font-size: 34px;
+  max-width: 1000px;
+  line-height: 1.5;
+  word-wrap: break-word;  /* garante que palavras longas quebrem corretamente */
+  overflow-wrap: break-word;
+}
+
+
+button.btn {
+  display: flex;              /* usa flexbox */
+  justify-content: center;    /* centraliza horizontalmente */
+  align-items: center;        /* centraliza verticalmente */
+  text-align: center;         /* garante centralização do texto */
+  font-size: 30px;
+  margin: 45px;
+  padding: 30px 45px;
+  border: none;
+  border-radius: 5px;
+  background-color: #5557c2;
+  color: white;
+}
+
+.botoes {
+  display: flex;
+  justify-content: center;   /* centraliza na horizontal */
+  align-items: center;       /* centraliza na vertical (se tiver altura definida) */
+}
+
+
+/* Ajuste para telas de até 1944px */
+@media (max-width: 1944px) {
+  .container {
+    width: 85%;
+    margin: 60px auto;
+  }
+
+  .conclusao {
+    font-size: 28px;
+    max-width: 900px;
+  }
+}
+
+/* Ajuste para telas menores (ex: notebooks) */
+@media (max-width: 1366px) {
+  .conclusao {
+    font-size: 22px;
+    max-width: 90%;
+  }
+}
+
+/* Ajuste para dispositivos móveis */
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+    margin: 30px auto;
+  }
+
+  .conclusao {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  button.btn {
+    font-size: 18px;
+    padding: 15px 25px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  button.btn {
+    font-size: 20px;
+    padding: 20px 30px;
+    margin: 20px;
+  }
+}
+

@@ -1,0 +1,155 @@
+<div class="container">
+  <!--div style="background: #f0f0f0; padding: 5px; margin-bottom: 10px; font-size: 12px;">
+    DEBUG: Etapa atual = {{ etapa }}
+  </!--div-->
+  <div class="enunciado" *ngIf="etapa === 1">
+    <h4><b> Lição Teste: </b></h4>
+    <h5>Você professor observa seu aluno tentando abrir o estojo, mas ele não está conseguindo,</h5>
+    <h5>como você pode oferecer ajuda se comunicando através da CAA?</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 2">
+    <h4><b> 1. Apresentação: </b></h4>
+    <h5>Você, professor, chegou à sala de aula e precisa apresentar-se à turma usando CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 3">
+    <h4><b> 2. Nome com CAA: </b></h4>
+    <h5>Como você professor perguntaria o nome dos alunos usando a CAA?</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 4">
+    <h4><b> 3. Regras na Sala de Aula: </b></h4>
+    <h5>Você professor irá explicar sobre as regras na sala de aula, faça isso usando a CAA.</h5>
+    <h5>Regra Nº 1 : Não pode conversar durante as explicações.</h5>
+  </div>
+  <div class="enunciado" *ngIf="etapa === 5">
+    <h4><b> 4. Regras na Sala de Aula: </b></h4>
+    <h5>Você professor irá explicar sobre as regras na sala de aula, faça isso usando a CAA.</h5>
+    <h5>Regra Nº 2 : O aluno que quiser sair da sala de aula, pode pedir ajuda.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 6">
+    <h4><b> 5. Regras na Sala de Aula: </b></h4>
+    <h5>Você professor irá explicar sobre as regras na sala de aula, faça isso usando a CAA.</h5>
+    <h5>Regra Nº 3 : Eu estou aqui para ajudar vocês.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 7">
+    <h4><b> 6. Instruções da Aula: </b></h4>
+    <h5>Após explicar todas as regras aos alunos, podemos iniciar as instruções da aula usando a CAA.</h5>
+    <h5>Agora vocês podem abrir o livro na página "X".</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 8">
+    <h4><b> 7. Instruções da Aula: </b></h4>
+    <h5>Após os alunos abrirem os livros você poderá indicar que um aluno leia um trecho do texto e oferecer ajuda caso o aluno tenha dúvida.</h5>
+    <h5>Lembre-se de fazer isso usando CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 9">
+    <h4><b> 8. Interação na Sala de Aula: </b></h4>
+    <h5>Após o aluno ler o trecho do livro, você professor poderá perguntar quem da turma gostou da leitura, faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 10">
+    <h4><b> 9. Interação na Sala de Aula: </b></h4>
+    <h5>Pergunte aos seus alunos se eles querem ler mais um trecho agora ou em outra aula, faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 11">
+    <h4><b> 10. Interação na Sala de Aula: </b></h4>
+    <h5>Você professor percebeu que os seus alunos querem continuar lendo, comunique que você percebeu que eles querem ler mais.</h5>
+    <h5>Faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 12">
+    <h4><b> 11. Interação na Sala de Aula: </b></h4>
+    <h5>Supondo que os alunos escolheram parar de ler, comunique a turma que você entendeu que eles não querem mais ler.</h5>
+    <h5>Lembre-se de fazer isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 13">
+    <h4><b> 12. Interação na Sala de Aula: </b></h4>
+    <h5>Antes de iniciar a próxima atividade, comunique os alunos que agora apenas o estojo deve permanecer em cima da mesa.</h5>
+    <h5>Faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 14">
+    <h4><b> 13. Liberados para o intervalo: </b></h4>
+    <h5>Ao terminar atividade comunique seus alunos que eles estão liberados para ir para o intervalo, faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 15">
+    <h4><b> 14. Interação na Sala de Aula: </b></h4>
+    <h5>Após o lanche, na volta para a sala de aula, conte aos alunos todos irão sair agora da sala de aula </h5>
+    <h5>para fazer uma atividade diferente na quadra,  faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 16">
+    <h4><b> 15. Interação com os alunos: </b></h4>
+    <h5>Já na quadra da escola pergunte aos alunos qual atividade eles acham que irão fazer, faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 17">
+    <h4><b> 16. Interação com os alunos: </b></h4>
+    <h5>Após os alunos darem algumas ideias das atividades que podem ser feitas na quadra, escolha duas opções dada por eles,</h5>
+    <h5>e peça que escolham entre elas, mas não se esqueça faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 18">
+    <h4><b> 17. Voltar para Sala de Aula: </b></h4>
+    <h5>Ao término da atividade na quadra, peça que seus alunos retornem a sala de aula, faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 19">
+    <h4><b> 18. Interação na Sala de Aula: </b></h4>
+    <h5>Ao voltar para a sala de aula nota-se que os alunos se mantém mais agitados, falando um pouco mais sobre atividade</h5>
+    <h5>realizada fora da sala de aula, faça um breve comentário com os alunos mostrando que você percebeu que eles gostaram.</h5>
+    <h5>Faça isso usando a CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 20">
+    <h4><b> 19. Interação na Sala de Aula: </b></h4>
+    <h5>Aproveitando esse momento de troca entre a turma, pergunte quando eles querem fazer uma nova atividade fora da sala de aula.</h5>
+    <h5>Faça isso usando CAA.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 21">
+    <h4><b> 20. Interação na Sala de Aula: </b></h4>
+    <h5>Faça um breve comentário de que você também gostou de fazer atividade hoje, usa a CAA para fazer esse comentário.</h5>
+  </div>
+
+  <div class="enunciado" *ngIf="etapa === 22">
+    <h4><b> 21. Fim da Aula: </b></h4>
+    <h5>Para finalizar a aula, comunique que a aula acabou e que estão liberados para sair da sala,</h5>
+    <h5>não se esqueça de fazer isso usando a CAA.</h5>
+  </div>
+
+  <div class="conclusao" *ngIf="etapa === 23">
+    <h1>Parabéns!!! 🎉 </h1>
+    <p>Treinamento concluído com sucesso!</p>
+    <br>
+    <p><strong>Agora você é um Professor Parceiro de Comunicação Aumentativa e Alternativa para alunos TEA</strong></p>
+    <br>
+    <p>Esperamos que você tenha gostado do curso e que as habilidades adquiridas possam ser aplicadas em sua prática docente.</p>
+    <br>
+    <p>Agora, pedimos que você responda a um breve questionário para avaliar a nossa plataforma.</p>
+      <p>Sua opinião é muito importante para continuarmos melhorando. </p>
+
+    <div class="botoes">
+      <button class="btn" (click)="abrirFormulario()">📜 Responder Questionário</button>
+    </div>
+
+  </div>
+
+
+
+  <!-- Fallback caso a etapa não seja reconhecida -->
+  <div class="enunciado" *ngIf="etapa < 1 || etapa > 23">
+    <h4><b> Etapa {{ etapa }}: </b></h4>
+    <h5>Etapa não reconhecida. Por favor, recarregue a página.</h5>
+  </div>
+
+</div>
+

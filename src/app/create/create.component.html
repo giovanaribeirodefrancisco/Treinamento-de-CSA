@@ -1,0 +1,40 @@
+<div class="container-login">
+  <div class="left-panel">
+    <h1>Prancha <br><span>Web!</span></h1>
+  </div>
+
+  <div class="right-panel">
+    <h3>Crie sua Conta!</h3>
+    <br>
+    <form #registerForm="ngForm" (ngSubmit)="criarConta()">
+      <div class="input-field">
+        <input [(ngModel)]="usuario.nome" name="nome" id="usuario" type="text" required #nome="ngModel">
+        <label style="font-size: 20px;" for="usuario">Usuário</label>
+        <div *ngIf="nome.invalid && nome.touched" class="error-text" style="font-size: 20px;">
+          O campo Usuário é obrigatório!
+        </div>
+      </div>
+
+      <div class="input-field">
+        <input [(ngModel)]="usuario.email" name="email" id="email" type="email" required #email="ngModel">
+        <label style="font-size: 20px;" for="email">E-mail</label>
+        <div *ngIf="email.invalid && email.touched" class="error-text" style="font-size: 20px;">
+          O campo E-mail é obrigatório!
+        </div>
+      </div>
+
+      <div class="input-field">
+        <input [(ngModel)]="usuario.senha" name="senha" id="senha" type="password" required #senha="ngModel">
+        <label style="font-size: 20px;" for="senha">Senha</label>
+        <div *ngIf="senha.invalid && senha.touched" class="error-text" style="font-size: 20px;">
+          O campo Senha é obrigatório!
+        </div>
+      </div>
+
+      <button type="submit" class="btn waves-effect waves-light" [disabled]="registerForm.invalid">
+        <strong>Criar</strong>
+        <i class="material-icons right">check</i>
+      </button>
+    </form>
+  </div>
+</div>

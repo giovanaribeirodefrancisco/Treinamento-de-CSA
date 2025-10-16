@@ -1,0 +1,95 @@
+<nav *ngIf="mostrarMenu">
+  <div class="nav-wrapper">
+    <a routerLink="prancha" class="brand-logo">ComuniCA-Ação</a>
+
+    <!--Menu mobile-->
+    <a href="#" data-target="mobile-demo" class="sidenav-trigger" (click)="$event.preventDefault(); openSidenav()">
+      <i class="material-icons">menu</i>
+    </a>
+
+    <!--Menu desktop-->
+    <ul id="nav-mobile" class="hide-on-med-and-down">
+      <li *ngIf="authservice.usuarioEstaAutenticado()">
+        <a
+          routerLink="/prancha/perfil"
+          routerLinkActive="active"
+          class="espaco1"
+          (click)="toggleIcon('perfil')">
+           <!-- Foto de perfil -->
+          <!--img
+            *ngIf="usuarioLogado"
+            src="usuarioLogado?.fotoPerfil || 'assets/imagem/perfil.jpg'"
+            alt="Foto de perfil"
+            class="circle responsive-img left"
+            style="width: 50px; height: 50px; margin-right: 18px; object-fit: cover;"
+          -->
+          {{ usuarioLogado?.username }}
+          <!--{{ authservice.getusuarioLogado()?.username }}-->
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Menu mobile -->
+<ul class="sidenav" id="mobile-demo">
+  <li>
+    <a
+      routerLink="/prancha/perfil"
+      routerLinkActive="active"
+      (click)="toggleIcon('perfil')">
+      <!--img
+        *ngIf="usuarioLogado"
+        src="usuarioLogado?.fotoPerfil || 'assets/imagem/perfil.jpg'"
+        alt="Foto de perfil"
+        class="circle responsive-img left"
+        style="width: 32px; height: 32px; margin-right: 8px; object-fit: cover;"
+      -->
+      perfil
+    </a>
+  </li>
+</ul>
+
+<!-- Seção Prancha Web - Cards (APENAS na rota exata /prancha) -->
+<div class="prancha-web-section" *ngIf="mostrarMenu && mostrarCartoesPrancha">
+  <div class="prancha-container">
+    <!-- Cards dos Módulos -->
+    <div class="cards-container">
+      <div
+        class="module-card"
+        routerLink="/prancha/treinoteo"
+        (click)="onCardClick('Orientações Teóricas')"
+      >
+        <div class="card-content">
+          <i class="material-icons card-icon">school</i>
+          <h3 class="card-title">Orientações Teóricas</h3>
+          <p class="card-description">Conteúdo teórico e conceitos fundamentais para o desenvolvimento</p>
+          <div class="card-arrow">
+            <i class="material-icons">arrow_forward</i>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="module-card"
+        routerLink="/prancha/treinopra"
+        (click)="onCardClick('Treinamento Prático')"
+      >
+        <div class="card-content">
+          <i class="material-icons card-icon">fitness_center</i>
+          <h3 class="card-title">Treinamento Prático</h3>
+          <p class="card-description">Exercícios práticos e aplicações do conhecimento adquirido</p>
+          <div class="card-arrow">
+            <i class="material-icons">arrow_forward</i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Container principal para as rotas -->
+<div class="container" [ngClass]="{'hide-router': mostrarCartoesPrancha}">
+  <router-outlet></router-outlet>
+</div>

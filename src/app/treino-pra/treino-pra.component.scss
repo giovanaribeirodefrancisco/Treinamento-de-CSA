@@ -1,0 +1,192 @@
+.container-principal {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.prancha {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh; /* Ajustado para não ocupar toda a altura */
+  //padding-top: 12vh; /* Espaço para o navbar */
+ // margin-top: px; /* Espaço entre o navbar e a prancha */
+  gap: 20px;
+  flex: 1;
+}
+
+.itens-container {
+  display: grid;
+  gap: 3px;
+  grid-template-columns: repeat(10, 95px);
+  grid-auto-rows: 95px;
+}
+
+.item {
+  position: relative; /* Importante para posicionamento absoluto */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 95px; /* Define o tamanho exato */
+  height: 95px;
+  overflow: visible; /* Permite que a borda ultrapasse o container */
+  padding: 1px;
+}
+
+.item img {
+  max-width: 95%;
+  max-height: 95%;
+  object-fit: contain; /* Mantém a proporção da imagem */
+}
+
+.area-mensagem {
+  margin-top: 30px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  width: 80%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.texto {
+  font-size: 22px;
+  font-weight: bold;
+  color: #000000;
+  text-align: center;
+}
+
+.item.item-selecionado::after{
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: calc(100% + 8px); /* Compensa as bordas laterais */
+  height: calc(100% + 8px); /* Compensa as bordas superior e inferior */
+  border: 6px solid #007bff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.6);
+  pointer-events: none; /* Permite cliques no item abaixo */
+  z-index: 1; /* Mantém a borda acima do conteúdo */
+  transition: all 0.3s ease-in-out;
+}
+
+.item-selecionado{
+  transition: all 0.3s ease-in-out;
+}
+
+.area-texto {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #c7c2c2;
+  border-radius: 8px;
+  min-height: 60px;
+  font-size: 30px;
+}
+
+.acoes {
+  position: fixed;
+  right: 2vw;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.btn-acao {
+  padding: 12px 16px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  min-width: 140px;
+}
+
+
+.btn-acao:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.btn-acao:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.feedback-mensagem {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 48px;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+.sucesso {
+  background-color: rgb(8, 161, 0);
+  color: white;
+}
+
+.erro {
+  background-color: rgb(249, 36, 21);
+  color: white;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.destaque-dica {
+  border: 8px solid rgb(255, 114, 6);
+  transform: scale(1.2);
+  transition: transform 0.3s ease, border 0.3s ease;
+  z-index: 1;
+  border-radius: 12px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  top: -4px;
+  left: -4px;
+}
+
+/* Quando a tela for 1024px ou menor */
+@media (max-width: 1411px) {
+  .acoes {
+    position: static; /* tira o fixo */
+    transform: none;  /* remove o deslocamento vertical */
+    flex-direction: row; /* coloca os botões lado a lado */
+    justify-content: center; /* centraliza */
+    margin-top: 20px; /* espaço acima */
+    gap: 10px; /* espaço entre os botões */
+  }
+
+  .btn-acao {
+    min-width: auto; /* permite os botões se ajustarem */
+    font-size: 20px; /* opcional: reduz o tamanho para caber melhor */
+    padding: 10px 14px;
+  }
+}
+

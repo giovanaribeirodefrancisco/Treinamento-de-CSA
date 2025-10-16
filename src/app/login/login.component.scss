@@ -1,0 +1,263 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.container-login {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  position: fixed;
+  margin: 0;
+  left: 0;
+  top: 0;
+}
+
+.left-panel {
+  background-color: #aedbeb;
+  color: white;
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 40px;
+  margin: 0;
+}
+
+.left-panel h1 {
+  font-size: 5rem;
+  font-weight: lighter;
+  z-index: 1;
+  text-align: center;
+
+}
+
+.left-panel h1 span {
+  display: block;
+  margin-left: 40px; /* Ajuste esse valor para mover mais ou menos para a direita */
+}
+
+.right-panel {
+  flex: 1;
+  width: 60%;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.input-field {
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"] {
+  font-size: 22px;
+}
+
+
+button {
+  background-color: #aedbeb;
+  color: rgb(11, 58, 108);
+  width: 150px; /* Largura personalizada */
+  height: 50px; /* Altura personalizada */
+  font-size: 18px; /* Tamanho da fonte */
+  padding: 10px 20px;
+  border-radius: 25px;
+}
+
+.btn {
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px; // Tamanho mínimo recomendado para touch
+  min-width: 44px;
+
+  &:disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+.error-text{
+  color: red;
+  font-size: 0.875em;
+  margin-top: 4px;
+}
+
+.createaccount{
+  font-size: 24px;
+}
+
+.createaccount {
+  font-size: 28px;
+  cursor: pointer;
+  color: black;
+  transition: 0.3s;
+}
+
+.createaccount:hover {
+  text-decoration: underline;
+}
+
+/* Centralização e tamanho do modal */
+.modal {
+  max-width: 850px !important; /* deixa um pouco maior */
+  width: 85% !important;
+  height: auto !important;
+  border-radius: 15px;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  overflow: hidden !important;
+}
+
+/* Conteúdo interno do modal */
+.modal-content {
+  padding: 24px;
+  text-align: justify;
+  max-height: 75vh; /* aumenta o espaço interno */
+  overflow-y: auto;
+}
+
+/* Scroll discreto */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Centraliza o título */
+.modal-content h4 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* Rodapé com os botões */
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* espaço entre os botões */
+  padding: 20px 0;
+  border-top: none;
+  margin-bottom: 20px;
+}
+
+/* Botões */
+.modal-footer .btn {
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 24px;
+  line-height: 1.2;
+  text-transform: none;
+  white-space: normal; /* permite quebra de linha */
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Botão “Sim, eu concordo” */
+.modal-footer .btn.green {
+  background-color: #2e7d32 !important;
+  color: white;
+  min-width: 130px;
+}
+
+/* Botão “Não concordo” */
+.modal-footer .btn.red {
+  background-color: #c62828 !important;
+  color: white;
+  min-width: 130px;
+}
+
+/* Sombra leve no modal */
+.modal.open {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Fundo escurecido */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6); /* fundo escuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Caixa de aviso */
+.aviso-container {
+  background-color: #d32f2f; /* vermelho */
+  color: white;
+  padding: 40px 50px;
+  border-radius: 15px;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Título e texto */
+.aviso-container h3 {
+  margin-top: 0;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.aviso-container p {
+  font-size: 18px;
+  margin: 15px 0 25px 0;
+  line-height: 1.4;
+}
+
+/* Botão "Entendi" */
+.aviso-container .btn {
+  background-color: white !important;
+  color: #d32f2f !important;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 10px 25px;
+  text-transform: none;
+  transition: 0.3s;
+}
+
+.aviso-container .btn:hover {
+  background-color: #f8f8f8 !important;
+}
+
+/* Animação suave de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+

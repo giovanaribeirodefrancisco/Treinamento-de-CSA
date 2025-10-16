@@ -1,0 +1,94 @@
+<div class="perfil-container">
+  <!-- Foto de Perfil -->
+  <!--div class="foto-perfil-section">
+    <div class="foto-perfil-container">
+      <div class="foto-perfil" [ngClass]="{'has-image': usuario.fotoPerfil}">
+        <img *ngIf="usuario.fotoPerfil" [src]="usuario.fotoPerfil" alt="Foto de perfil">
+        <div *ngIf="!usuario.fotoPerfil" class="placeholder-icon">
+          <span class="plus-icon">+</span>
+        </div>
+      </div>
+      <input type="file"
+             id="file-input"
+             accept="image/*"
+             (change)="onFileSelected($event)"
+             style="display: none;">
+      <label for="file-input" class="foto-perfil-overlay"></label>
+    </div>
+    <p class="foto-perfil-label">Foto de Perfil</p>
+  </!--div-->
+
+  <!-- Card do Formulário -->
+  <div class="perfil-card">
+    <div class="form-section">
+      <div class="input-group">
+        <input type="text"
+               id="nome"
+               [(ngModel)]="usuario.username"
+               placeholder="Nome de usuário"
+               class="form-input">
+        <span class="input-icon">✎</span>
+      </div>
+
+      <div class="input-group">
+        <input type="email"
+               id="email"
+               [(ngModel)]="usuario.email"
+               placeholder="E-mail"
+               class="form-input">
+        <span class="input-icon">✎</span>
+      </div>
+
+      <!-- Botão Alterar Senha -->
+      <button type="button"
+              class="btn-alterar-senha"
+              (click)="abrirModalSenha()">
+        Alterar senha
+      </button>
+
+      <!-- Botão Salvar -->
+      <button type="button"
+              class="btn-salvar"
+              (click)="salvarPerfil()">
+        Salvar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Alteração de Senha -->
+<div class="modal-overlay" *ngIf="modalSenhaAberto" (click)="fecharModalSenha()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Alterar Senha</h2>
+
+    <div class="input-group">
+      <input type="password"
+             [(ngModel)]="senhaAtual"
+             placeholder="Senha atual"
+             class="form-input">
+    </div>
+
+    <div class="input-group">
+      <input type="password"
+             [(ngModel)]="novaSenha"
+             placeholder="Nova senha"
+             class="form-input">
+    </div>
+
+    <div class="input-group">
+      <input type="password"
+             [(ngModel)]="confirmarNovaSenha"
+             placeholder="Confirmar nova senha"
+             class="form-input">
+    </div>
+
+    <div class="modal-buttons">
+      <button type="button" class="btn-cancelar" (click)="fecharModalSenha()">
+        Cancelar
+      </button>
+      <button type="button" class="btn-confirmar" (click)="confirmarAlteracaoSenha()">
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>
