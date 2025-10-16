@@ -8,13 +8,13 @@
     <br>
     <form #loginForm="ngForm" (ngSubmit)="fazerLogin()">
       <!-- Usuário -->
-      <div class="input-field">
+      <!--div class="input-field">
         <input [(ngModel)]="usuario.username" name="username" id="username" type="text" required autocomplete="username" #username="ngModel">
         <label style="font-size: 20px;" for="username">Nome do usuário</label>
         <div *ngIf="username.invalid && username.touched" class="error-text" style="font-size: 20px;">
           O campo Nome do usuário é obrigatório!
         </div>
-      </div>
+      </!--div-->
 
       <!-- Email -->
       <div class="input-field">
@@ -34,9 +34,13 @@
         </div>
       </div>
 
-      <button type="submit" class="btn" [disabled]="loginForm.invalid" (click)="fazerLogin()"
-        (touchstart)="fazerLogin()">
-        <strong>Enviar</strong>
+       <!-- NOVO: Mensagem de erro -->
+      <div *ngIf="errorMessage" class="error-text" style="font-size: 18px; color: red; margin-bottom: 20px;">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn" [disabled]="loginForm.invalid || loading">
+        <strong>{{ loading ? 'Entrando...' : 'Enviar' }}</strong>
         <i class="material-icons right">send</i>
       </button>
 

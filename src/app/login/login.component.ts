@@ -17,6 +17,8 @@ import { Router, RouterLink } from '@angular/router';
 export class LoginComponent implements AfterViewInit {
 
   mostrarAviso = false;
+  errorMessage = ''; // NOVO: Mensagem de erro
+  loading = false; // NOVO: Estado de carregamento
 
   usuario: Usuario = new Usuario();
   lembrar: boolean = false;
@@ -36,30 +38,35 @@ export class LoginComponent implements AfterViewInit {
   constructor(private readonly authService: AuthService, private readonly router: Router){}
 
   fazerLogin(){
+    this.loading = true; // NOVO
+    this.errorMessage = ''; // NOVO
+
     const userData = {
       username: this.usuario.username || '',
       email: this.usuario.email || '', // eu uso o "nome" no front, mas aqui é o email
       password: this.usuario.senha || ''
     };
 
-    try {
-      this.authService.loginComServidor(userData).subscribe(
-        (data) => {
-          console.log("Resposta do backend:", data);
+     // ATUALIZADO: Usar a nova API /api/login
+    this.authService.loginComServidor(userData).subscribe({
+      next: (data) => {
+        console.log("Resposta do backend:", data);
+        
+        if (data.success) {
           this.authService.fazerLogin(data.user);
           this.router.navigate(['/prancha']);
+        } else {
+          this.errorMessage = data.error || 'Erro ao fazer login';
         }
-      )
-      // if (response.success) {
-      //   this.authService.fazerLogin(response.user);
-      //   this.router.navigate(['/prancha']);
-      // } else {
-      //   alert(response.message || 'Erro ao fazer login');
-      // }
-    } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      alert('Erro ao fazer login. Verifique as credenciais.');
-    }
+        
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erro ao fazer login:', error);
+        this.errorMessage = error.error?.error || 'Erro ao fazer login. Verifique as credenciais.';
+        this.loading = false;
+      }
+    });
   }
 
   testeBotao() {

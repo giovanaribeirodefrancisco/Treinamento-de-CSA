@@ -31,8 +31,17 @@
         </div>
       </div>
 
-      <button type="submit" class="btn waves-effect waves-light" [disabled]="registerForm.invalid">
-        <strong>Criar</strong>
+       <!-- NOVO: Mensagens de erro e sucesso -->
+      <div *ngIf="errorMessage" class="error-text" style="font-size: 18px; color: red; margin-bottom: 20px;">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="success-text" style="font-size: 18px; color: green; margin-bottom: 20px;">
+        {{ successMessage }}
+      </div>
+
+      <button type="submit" class="btn waves-effect waves-light" [disabled]="registerForm.invalid || loading">
+        <strong>{{ loading ? 'Criando...' : 'Criar' }}</strong>
         <i class="material-icons right">check</i>
       </button>
     </form>

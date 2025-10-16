@@ -1,3 +1,5 @@
+//auth.service.ts
+
 import { Injectable, EventEmitter } from "@angular/core";
 import { Usuario } from "./usuario";
 import { Router } from "@angular/router";
@@ -14,7 +16,9 @@ export class AuthService {
   mostrarMenuEmitter = new EventEmitter<boolean>();
   usuarioAtualizadoEmitter = new EventEmitter<Usuario>();
 
-  private readonly apiUrl = 'http://localhost:3000/api';
+  //private readonly apiUrl = 'http://localhost:3000/api';
+
+  private readonly apiUrl = '/api';
 
   constructor(private readonly router: Router, private readonly http: HttpClient) {
     this.verificarAutenticacao();
@@ -46,7 +50,7 @@ export class AuthService {
     });
   }
 
-  loginComServidor(dados: { username: string, email: string, password: string }): Observable<any> {
+  loginComServidor(dados: { email: string, password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, dados);
   }
 
@@ -95,19 +99,22 @@ export class AuthService {
   }
 
   fazerLogin(user: any): boolean {
-    if (user && user.token) {
+    if (user && (user.id || user._id)) {
       this.usuarioAutenticado = true;
-      localStorage.setItem('token', user.token);
+      
+      // Gerar token simples (em produção, use JWT)
+      const token = btoa(`${user.email}:${Date.now()}`);
+      localStorage.setItem('token', token);
 
       this.usuarioLogado = {
-        id: user.id,
-        username: user.username, // mapeando corretamente
+        id: user.id || user._id,
+        username: user.name || user.username,
         email: user.email,
-        fotoPerfil: user.fotoPerfil,
-        token: user.token
+        fotoPerfil: user.fotoPerfil || null,
+        token: token
       };
 
-      localStorage.setItem("userId", user.id);
+      localStorage.setItem("userId", user.id || user._id);
       localStorage.setItem('usuarioLogado', JSON.stringify(this.usuarioLogado));
       this.mostrarMenuEmitter.emit(true);
       return true;

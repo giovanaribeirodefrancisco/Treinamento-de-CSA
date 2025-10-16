@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "giovanaribeirodefrancisco/Treinamento-de-CSA",
+    "public": "dist/projeto/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
