@@ -1,8 +1,9 @@
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
 const uri = process.env.MONGODB_URI;
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
+  // Configurar CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -12,7 +13,10 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido' });
+    return res.status(405).json({ 
+      success: false,
+      error: 'Método não permitido' 
+    });
   }
 
   const client = new MongoClient(uri);
@@ -66,4 +70,4 @@ export default async function handler(req, res) {
   } finally {
     await client.close();
   }
-}
+};
