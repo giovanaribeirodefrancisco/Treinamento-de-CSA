@@ -1,7 +1,6 @@
-// src/app/treino-pra/video-introducao/video-introducao.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, timeout } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
@@ -9,6 +8,7 @@ import { catchError, map } from 'rxjs/operators';
 })
 export class VideoIntroducaoService {
   private readonly API_URL = '/api';
+  private readonly REQUEST_TIMEOUT = 5000; // 5 segundos de timeout
 
   constructor(private http: HttpClient) {}
 
@@ -17,9 +17,11 @@ export class VideoIntroducaoService {
    */
   verificarVideoAssistido(userId: string): Observable<boolean> {
     return this.http.get<any>(`${this.API_URL}/video-status?userId=${userId}`).pipe(
+      timeout(this.REQUEST_TIMEOUT),
       map(response => response.success && response.videoWatched),
       catchError(error => {
         console.error('Erro ao verificar status do vídeo:', error);
+        // Em caso de erro, considera como não assistido (fallback seguro)
         return of(false);
       })
     );
@@ -29,17 +31,18 @@ export class VideoIntroducaoService {
    * Marca o vídeo como assistido
    */
   marcarVideoComoAssistido(userId: string): Observable<boolean> {
-     return this.http.post<any>(`${this.API_URL}/video-status`, { userId }).pipe(
+    return this.http.post<any>(`${this.API_URL}/video-status`, { userId }).pipe(
+      timeout(this.REQUEST_TIMEOUT),
       map(response => response.success),
       catchError(error => {
         console.error('Erro ao marcar vídeo como assistido:', error);
-        return of(false);
+        return of(true); // Retorna true para não bloquear o fluxo
       })
     );
   }
 
   /**
-   * Método para verificação local (fallback caso não tenha conexão)
+   * Método para verificação local (fallback)
    */
   verificarVideoAssistidoLocal(): boolean {
     if (typeof window === 'undefined') return false;
@@ -55,7 +58,7 @@ export class VideoIntroducaoService {
    * Marca localmente que o vídeo foi assistido
    */
   marcarVideoComoAssistidoLocal(): void {
-    if (typeof window !== 'undefined'){
+    if (typeof window !== 'undefined') {
       try {
         localStorage.setItem('videoIntroducaoAssistido', 'true');
         localStorage.setItem('dataVideoAssistido', new Date().toISOString());
@@ -66,41 +69,87 @@ export class VideoIntroducaoService {
   }
 
   /**
-   * Método combinado que tenta servidor primeiro, depois local
+   * Método MELHORADO: Usa com timeout para não ficar eternamente
    */
   async verificarStatusVideo(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
 
     const userId = localStorage.getItem('userId');
-    if (!userId) return this.verificarVideoAssistidoLocal();
+
+    // Se não há userId, usa o cache local
+    if (!userId) {
+      console.log('❌ Sem userId, usando verificação local');
+      return this.verificarVideoAssistidoLocal();
+    }
 
     try {
-      const statusServidor = await this.verificarVideoAssistido(userId).toPromise();
-      return statusServidor || false;
+      console.log('🔍 Verificando status do vídeo no servidor...');
+
+      // Cria uma promise que resolve com timeout
+      const promiseComTimeout = new Promise<boolean>((resolve) => {
+        const timeoutId = setTimeout(() => {
+          console.warn('⏱️ Timeout ao verificar vídeo, usando cache local');
+          resolve(this.verificarVideoAssistidoLocal());
+        }, this.REQUEST_TIMEOUT);
+
+        this.verificarVideoAssistido(userId).subscribe(
+          (result) => {
+            clearTimeout(timeoutId);
+            console.log('✅ Status do vídeo verificado:', result);
+            resolve(result);
+          },
+          (error) => {
+            clearTimeout(timeoutId);
+            console.warn('⚠️ Erro ao verificar no servidor, usando cache local:', error);
+            resolve(this.verificarVideoAssistidoLocal());
+          }
+        );
+      });
+
+      return await promiseComTimeout;
     } catch (error) {
-      console.error('Falha ao verificar no servidor, usando cache local:', error);
+      console.error('❌ Erro inesperado:', error);
       return this.verificarVideoAssistidoLocal();
     }
   }
 
   /**
-   * Método combinado para marcar como assistido
+   * Método para marcar como assistido (com fallback)
    */
   async marcarComoAssistido(): Promise<void> {
     if (typeof window === 'undefined') return;
 
     const userId = localStorage.getItem('userId');
 
-    // Marca localmente primeiro
+    // Marca localmente PRIMEIRO
     this.marcarVideoComoAssistidoLocal();
 
-    // Sincroniza com o servidor
+    // Tenta sincronizar com servidor em background (sem bloquear)
     if (userId) {
       try {
-        await this.marcarVideoComoAssistido(userId).toPromise();
-        console.log('Vídeo marcado como assistido no servidor');
+        await new Promise<void>((resolve) => {
+          const timeoutId = setTimeout(() => {
+            console.warn('⏱️ Timeout ao marcar vídeo no servidor');
+            resolve();
+          }, this.REQUEST_TIMEOUT);
+
+          this.marcarVideoComoAssistido(userId).subscribe(
+            (success) => {
+              clearTimeout(timeoutId);
+              if (success) {
+                console.log('✅ Vídeo marcado como assistido no servidor');
+              }
+              resolve();
+            },
+            (error) => {
+              clearTimeout(timeoutId);
+              console.warn('⚠️ Erro ao marcar no servidor, mantendo local:', error);
+              resolve();
+            }
+          );
+        });
       } catch (error) {
-        console.error('Erro ao marcar no servidor, mantendo apenas local:', error);
+        console.error('❌ Erro ao sincronizar:', error);
       }
     }
   }

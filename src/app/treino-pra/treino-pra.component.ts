@@ -52,20 +52,32 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     try {
       this.carregandoStatusVideo = true;
+      console.log('🎬 Iniciando verificação de vídeo...');
 
-      // ✅ Verifica se o vídeo já foi assistido (servidor ou local)
-      this.videoJaAssistido = await this.videoService.verificarStatusVideo();
+      // ✅ Verifica se o vídeo já foi assistido com timeout
+      const videoAssistido = await Promise.race([
+        this.videoService.verificarStatusVideo(),
+        new Promise<boolean>(resolve => setTimeout(() => {
+          console.warn('⏱️ Timeout na verificação de vídeo, prosseguindo...');
+          resolve(false); // Assume que não foi assistido e mostra vídeo
+        }, 6000)) // Espera no máximo 6 segundos
+      ]);
+
+      this.videoJaAssistido = videoAssistido;
+      console.log('📊 Vídeo já foi assistido?', this.videoJaAssistido);
 
       if (!this.videoJaAssistido) {
         // Mostra o vídeo introdutório
+        console.log('📹 Mostrando vídeo introdutório...');
         this.mostrarVideoIntroducao = true;
       } else {
         // Caso já tenha assistido, carrega o progresso do treino direto
+        console.log('⏭️ Pulando vídeo, carregando progresso...');
         this.carregarProgresso();
       }
 
     } catch (error) {
-      console.error('Erro ao verificar status do vídeo:', error);
+      console.error('❌ Erro ao verificar status do vídeo:', error);
       // fallback: mostra vídeo introdutório
       this.mostrarVideoIntroducao = true;
     } finally {
@@ -78,15 +90,25 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
     try {
       this.mostrarVideoIntroducao = false;
       this.carregandoStatusVideo = true;
+      console.log('✅ Vídeo concluído, marcando como assistido...');
 
-      // ✅ Marca o vídeo como assistido (local + servidor)
-      await this.videoService.marcarComoAssistido();
+      // ✅ Marca o vídeo como assistido com timeout
+      await Promise.race([
+        this.videoService.marcarComoAssistido(),
+        new Promise<void>(resolve => setTimeout(() => {
+          console.warn('⏱️ Timeout ao marcar vídeo, prosseguindo mesmo assim...');
+          resolve();
+        }, 6000))
+      ]);
 
+      console.log('💾 Vídeo marcado! Carregando progresso...');
       // Depois de marcado, carrega o progresso
       this.carregarProgresso();
 
     } catch (error) {
-      console.error('Erro ao marcar vídeo como assistido:', error);
+      console.error('❌ Erro ao marcar vídeo como assistido:', error);
+      // Mesmo com erro, prossegue
+      this.carregarProgresso();
     } finally {
       this.carregandoStatusVideo = false;
       this.cdr.detectChanges();

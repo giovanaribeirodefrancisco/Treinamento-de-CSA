@@ -1,4 +1,3 @@
-// src/app/treino-pra/video-introducao/video-introducao.component.ts
 import { Component, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -19,8 +18,9 @@ import { CommonModule } from '@angular/common';
           class="intro-video"
           controls
           (ended)="onVideoEnded()"
-          (loadedmetadata)="onVideoLoaded()">
-          <source src="assets/videos/introducao-treino-pratico.mp4" type="video/mp4">
+          (loadedmetadata)="onVideoLoaded()"
+          (error)="onVideoError($event)">
+          <source [src]="videoUrl" type="video/mp4">
           <p>Seu navegador não suporta vídeos HTML5.</p>
         </video>
 
@@ -31,10 +31,6 @@ import { CommonModule } from '@angular/common';
             [disabled]="!videoLoaded">
             Pular Introdução
           </button>
-
-          <!--div class="progress-indicator" *ngIf="videoLoaded">
-            <span>{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
-          </!--div-->
         </div>
 
         <div class="loading-indicator" *ngIf="!videoLoaded">
@@ -54,7 +50,7 @@ import { CommonModule } from '@angular/common';
       text-align: center;
     }
 
-    /*.video-wrapper {
+    .video-wrapper {
       background: white;
       border-radius: 15px;
       padding: 30px;
@@ -62,7 +58,7 @@ import { CommonModule } from '@angular/common';
       max-width: 800px;
       width: 100%;
       text-align: center;
-    }*/
+    }
 
     .video-title {
       color: black;
@@ -119,15 +115,6 @@ import { CommonModule } from '@angular/common';
       transform: none;
     }
 
-    /*.progress-indicator {
-      background: #f8f9fa;
-      padding: 8px 16px;
-      border-radius: 20px;
-      color: #666;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }*/
-
     .loading-indicator {
       display: flex;
       justify-content: center;
@@ -171,6 +158,16 @@ import { CommonModule } from '@angular/common';
         justify-content: center;
         text-align: center;
       }
+
+      .intro-video {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .btn-pular {
+        font-size: 1.2rem;
+        padding: 12px 20px;
+      }
     }
   `]
 })
@@ -179,31 +176,31 @@ export class VideoIntroducaoComponent implements AfterViewInit {
   @Output() videoCompleto = new EventEmitter<void>();
 
   videoLoaded = false;
-  currentTime = 0;
-  duration = 0;
+  videoUrl = '/assets/videos/introducao-treino-pratico.mp4';
 
   ngAfterViewInit() {
     const video = this.videoPlayer.nativeElement;
 
     video.onloadedmetadata = () => {
       this.videoLoaded = true;
+      console.log('Video metadata carregado');
     };
-
-    /*video.addEventListener('timeupdate', () => {
-      this.currentTime = video.currentTime;
-    });
-
-    video.addEventListener('loadedmetadata', () => {
-      this.duration = video.duration;
-    });*/
   }
 
   onVideoLoaded() {
     this.videoLoaded = true;
+    console.log('Video totalmente carregado');
+  }
+
+  onVideoError(event: any) {
+    console.error('Erro ao carregar vídeo:', event);
+    setTimeout(() => {
+      console.warn('Não foi possível carregar o vídeo, pulando...');
+      this.videoCompleto.emit();
+    }, 2000);
   }
 
   onVideoEnded() {
-    // Aguarda 2 segundos antes de redirecionar automaticamente
     setTimeout(() => {
       this.videoCompleto.emit();
     }, 2000);
@@ -211,11 +208,5 @@ export class VideoIntroducaoComponent implements AfterViewInit {
 
   pularVideo() {
     this.videoCompleto.emit();
-  }
-
-  formatTime(time: number): string {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 }
