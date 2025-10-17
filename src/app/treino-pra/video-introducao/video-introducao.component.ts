@@ -185,13 +185,17 @@ export class VideoIntroducaoComponent implements AfterViewInit {
   ngAfterViewInit() {
     const video = this.videoPlayer.nativeElement;
 
-    video.addEventListener('timeupdate', () => {
+    video.onloadedmetadata = () => {
+      this.videoLoaded = true;
+    };
+
+    /*video.addEventListener('timeupdate', () => {
       this.currentTime = video.currentTime;
     });
 
     video.addEventListener('loadedmetadata', () => {
       this.duration = video.duration;
-    });
+    });*/
   }
 
   onVideoLoaded() {
