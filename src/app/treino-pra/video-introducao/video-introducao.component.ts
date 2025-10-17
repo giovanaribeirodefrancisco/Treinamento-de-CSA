@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
           controls
           (ended)="onVideoEnded()"
           (loadedmetadata)="onVideoLoaded()">
-          <source src="../../../assets/videos/introducao-treino-pratico.mp4" type="video/mp4">
+          <source src="assets/videos/introducao-treino-pratico.mp4" type="video/mp4">
           <p>Seu navegador não suporta vídeos HTML5.</p>
         </video>
 
