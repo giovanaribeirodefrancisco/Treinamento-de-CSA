@@ -31,7 +31,15 @@
         </div>
       </div>
 
-       <!-- NOVO: Mensagens de erro e sucesso -->
+      <div class="input-field">
+        <input [(ngModel)]="usuario.confirmaSenha" name="confirmaSenha" id="confirmaSenha" type="password" required #confirmaSenha="ngModel">
+        <label style="font-size: 20px;" for="confirmaSenha">Confirmar Senha</label>
+        <div *ngIf="confirmaSenha.invalid && confirmaSenha.touched" class="error-text" style="font-size: 20px;">
+          O campo Confirmar Senha é obrigatório!
+        </div>
+      </div>
+
+      <!-- NOVO: Mensagens de erro e sucesso -->
       <div *ngIf="errorMessage" class="error-text" style="font-size: 18px; color: red; margin-bottom: 20px;">
         {{ errorMessage }}
       </div>

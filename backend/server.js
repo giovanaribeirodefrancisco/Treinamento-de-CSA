@@ -562,3 +562,75 @@ app.get('/api/user/progresso', auth, async (req, res) => {
     }
 });
 */
+
+// Rota alternativa para cadastro (mesmo que /api/users)
+app.post('/api/cadastro', async (req, res) => {
+    try {
+        const { username, email, password, confirmPassword } = req.body;
+
+        // Validação dos dados
+        const validationErrors = validateUserData({ username, email, password });
+        if (validationErrors.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: validationErrors.join(', ')
+            });
+        }
+
+        // Verifica se as senhas conferem
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'As senhas não conferem'
+            });
+        }
+
+        // Verifica se o usuário já existe
+        const existingUser = await User.findOne({
+          $or: [{ email }, { username }]
+        });
+
+        if (existingUser) {
+          return res.status(400).json({
+              success: false,
+              message: 'Email ou nome de usuário já cadastrado'
+          });
+        }
+
+        // Hash da senha
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const user = new User({
+            username,
+            email,
+            password: hashedPassword
+        });
+
+        await user.save();
+
+        // Gerando um token JWT
+        const token = jwt.sign(
+          { id: user._id, username: user.username },
+          'secretkey',
+          { expiresIn: '1h' }
+        );
+
+        res.status(201).json({
+            success: true,
+            message: 'Usuário criado com sucesso',
+            user: {
+                username: user.username,
+                email: user.email,
+                id: user._id,
+                token: token
+            }
+        });
+    } catch (error) {
+        console.error('Erro no servidor:', error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
