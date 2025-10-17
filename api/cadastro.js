@@ -1,9 +1,7 @@
 const { MongoClient } = require('mongodb');
 
-const uri = process.env.MONGODB_URI;
-
 module.exports = async (req, res) => {
-  // Configurar CORS
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -15,7 +13,16 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ 
       success: false,
-      error: 'Método não permitido' 
+      error: `Método ${req.method} não permitido` 
+    });
+  }
+
+  const uri = process.env.MONGODB_URI;
+  
+  if (!uri) {
+    return res.status(500).json({
+      success: false,
+      error: 'MONGODB_URI não configurado'
     });
   }
 
@@ -51,12 +58,12 @@ module.exports = async (req, res) => {
       createdAt: new Date()
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: 'Usuário cadastrado com sucesso',
-      userId: result.insertedId,
+      userId: result.insertedId.toString(),
       user: {
-        id: result.insertedId,
+        id: result.insertedId.toString(),
         name,
         email
       }
@@ -64,7 +71,7 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Erro no cadastro:', error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false,
       error: 'Erro interno do servidor' 
     });
