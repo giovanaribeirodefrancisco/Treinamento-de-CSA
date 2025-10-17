@@ -176,7 +176,7 @@ export class VideoIntroducaoComponent implements AfterViewInit {
   @Output() videoCompleto = new EventEmitter<void>();
 
   videoLoaded = false;
-  videoUrl = '/assets/videos/introducao-treino-pratico.mp4';
+  videoUrl = '/public/assets/videos/introducao-treino-pratico.mp4';
 
   ngAfterViewInit() {
     const video = this.videoPlayer.nativeElement;
