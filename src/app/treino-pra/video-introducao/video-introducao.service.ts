@@ -8,21 +8,19 @@ import { catchError, map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class VideoIntroducaoService {
-  private readonly API_URL = 'http://localhost:3000/api';
+  private readonly API_URL = '/api';
 
   constructor(private http: HttpClient) {}
 
   /**
    * Verifica se o usuário já assistiu ao vídeo introdutório
    */
-  verificarVideoAssistido(token: string): Observable<boolean> {
-    return this.http.get<any>(`${this.API_URL}/user/video-status`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    }).pipe(
-      map(response => response.sucesso && response.videoAssistido),
+  verificarVideoAssistido(userId: string): Observable<boolean> {
+    return this.http.get<any>(`${this.API_URL}/video-status?userId=${userId}`).pipe(
+      map(response => response.success && response.videoWatched),
       catchError(error => {
         console.error('Erro ao verificar status do vídeo:', error);
-        return of(false); // Se der erro, assume que não assistiu
+        return of(false);
       })
     );
   }
@@ -30,11 +28,9 @@ export class VideoIntroducaoService {
   /**
    * Marca o vídeo como assistido
    */
-  marcarVideoComoAssistido(token: string): Observable<boolean> {
-    return this.http.post<any>(`${this.API_URL}/user/marcar-video-assistido`, {}, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    }).pipe(
-      map(response => response.sucesso),
+  marcarVideoComoAssistido(userId: string): Observable<boolean> {
+     return this.http.post<any>(`${this.API_URL}/video-status`, { userId }).pipe(
+      map(response => response.success),
       catchError(error => {
         console.error('Erro ao marcar vídeo como assistido:', error);
         return of(false);
@@ -45,17 +41,14 @@ export class VideoIntroducaoService {
   /**
    * Método para verificação local (fallback caso não tenha conexão)
    */
-  verificarVideoAssistidoLocal(): boolean { 
-    if (typeof window !== 'undefined'){
-      try {
-        const videoStatus = localStorage.getItem('videoIntroducaoAssistido');
-        return videoStatus === 'true';
-      } catch (error) {
-        console.error('Erro ao acessar localStorage:', error);
-        return false;
-      }
+  verificarVideoAssistidoLocal(): boolean {
+    if (typeof window === 'undefined') return false;
+    try {
+      return localStorage.getItem('videoIntroducaoAssistido') === 'true';
+    } catch (error) {
+      console.error('Erro ao acessar localStorage:', error);
+      return false;
     }
-    return false; // fallback para SSR
   }
 
   /**
@@ -78,14 +71,11 @@ export class VideoIntroducaoService {
   async verificarStatusVideo(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
 
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      return this.verificarVideoAssistidoLocal();
-    }
+    const userId = localStorage.getItem('userId');
+    if (!userId) return this.verificarVideoAssistidoLocal();
 
     try {
-      const statusServidor = await this.verificarVideoAssistido(token).toPromise();
+      const statusServidor = await this.verificarVideoAssistido(userId).toPromise();
       return statusServidor || false;
     } catch (error) {
       console.error('Falha ao verificar no servidor, usando cache local:', error);
@@ -97,18 +87,17 @@ export class VideoIntroducaoService {
    * Método combinado para marcar como assistido
    */
   async marcarComoAssistido(): Promise<void> {
-    if (typeof window === 'undefined') return; // SSR fallback
+    if (typeof window === 'undefined') return;
 
+    const userId = localStorage.getItem('userId');
 
-    const token = localStorage.getItem('token');
-
-    // Sempre marca localmente primeiro
+    // Marca localmente primeiro
     this.marcarVideoComoAssistidoLocal();
 
-    // Tenta marcar no servidor se houver token
-    if (token) {
+    // Sincroniza com o servidor
+    if (userId) {
       try {
-        await this.marcarVideoComoAssistido(token).toPromise();
+        await this.marcarVideoComoAssistido(userId).toPromise();
         console.log('Vídeo marcado como assistido no servidor');
       } catch (error) {
         console.error('Erro ao marcar no servidor, mantendo apenas local:', error);

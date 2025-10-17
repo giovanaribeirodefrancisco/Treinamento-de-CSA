@@ -21,6 +21,10 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
 
   mostrarVideoIntroducao: boolean = false;
   carregandoStatusVideo: boolean = true;
+  videoJaAssistido: boolean = false;
+
+  progresso: any;
+  etapaAtual: number = 0;
 
   tempoDeEsperaEmSegundos: number = 10;
   timerHandle: any = null;
@@ -45,133 +49,73 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
               private videoService: VideoIntroducaoService
   ) {}
 
-  async ngOnInit() {
-    console.log('Componente inicializado, etapa inicial:', this.etapa);
-
-    const token = localStorage.getItem('token');
-    /*if (token) {
-      console.log('Token encontrado, carregando progresso...');
-      this.carregarProgresso(token);
-    } else {
-      console.error("⚠ Nenhum userId encontrado no localStorage!");
-      this.etapa = 1;
-      this.carregandoStatusVideo = false;
-      return;
-    }*/
-    if (!token) {
-      console.error("Nenhum token encontrado no localStorage!");
-      this.etapa = 1;
-      this.carregandoStatusVideo = false;
-      return;
-    }
-
-
+  async ngOnInit(): Promise<void> {
     try {
-      // NOVA FUNCIONALIDADE: Verifica se deve mostrar o vídeo introdutório
-      console.log('Verificando status do vídeo introdutório...');
-      const videoJaAssistido = await this.videoService.verificarStatusVideo();
+      this.carregandoStatusVideo = true;
 
-      if (!videoJaAssistido) {
-        console.log('Primeiro acesso - mostrando vídeo introdutório');
+      // ✅ Verifica se o vídeo já foi assistido (servidor ou local)
+      this.videoJaAssistido = await this.videoService.verificarStatusVideo();
+
+      if (!this.videoJaAssistido) {
+        // Mostra o vídeo introdutório
         this.mostrarVideoIntroducao = true;
-        this.carregandoStatusVideo = false;
-        return; // Não carrega o progresso ainda, aguarda o vídeo
+      } else {
+        // Caso já tenha assistido, carrega o progresso do treino direto
+        this.carregarProgresso();
       }
-
-      console.log('Vídeo já foi assistido - carregando progresso normal');
-      this.mostrarVideoIntroducao = false;
-      this.carregandoStatusVideo = false;
-
-      // Carrega o progresso normalmente
-      this.carregarProgresso(token);
 
     } catch (error) {
       console.error('Erro ao verificar status do vídeo:', error);
-      this.mostrarVideoIntroducao = false;
+      // fallback: mostra vídeo introdutório
+      this.mostrarVideoIntroducao = true;
+    } finally {
       this.carregandoStatusVideo = false;
-      this.carregarProgresso(token);
+      this.cdr.detectChanges();
     }
-
-
-    /*setInterval(() => {
-      this.salvarProgresso();
-    }, 30000);*/
   }
 
-  async onVideoIntroducaoConcluida() {
-    console.log('Vídeo introdutório concluído');
-
+  async onVideoIntroducaoConcluida(): Promise<void> {
     try {
-      // Marca o vídeo como assistido
-      await this.videoService.marcarComoAssistido();
-      console.log('Vídeo marcado como assistido');
-
-      // Esconde o vídeo e carrega o progresso
       this.mostrarVideoIntroducao = false;
+      this.carregandoStatusVideo = true;
 
-      const token = localStorage.getItem('token');
-      if (token) {
-        this.carregarProgresso(token);
-      } else {
-        this.etapa = 1; // Fallback
-      }
+      // ✅ Marca o vídeo como assistido (local + servidor)
+      await this.videoService.marcarComoAssistido();
+
+      // Depois de marcado, carrega o progresso
+      this.carregarProgresso();
 
     } catch (error) {
       console.error('Erro ao marcar vídeo como assistido:', error);
-      // Mesmo com erro, continua para o treinamento
-      this.mostrarVideoIntroducao = false;
-      this.etapa = 1;
+    } finally {
+      this.carregandoStatusVideo = false;
+      this.cdr.detectChanges();
     }
   }
 
-  carregarProgresso(token: string) {
-    console.log('Iniciando carregamento do progresso...');
-
-    this.treinoService.getProgresso(token).subscribe({
-      next: (progresso) => {
-        if (progresso) {
-          // CORREÇÃO PRINCIPAL: Verifica se etapaAtual existe e é maior que 0
-          // Se for 0 ou undefined, começa da questão 1
-          if (progresso.etapaAtual && progresso.etapaAtual > 0) {
-            this.etapa = progresso.etapaAtual;
-            console.log('Etapa restaurada do progresso salvo:', this.etapa);
-          } else {
-            this.etapa = 1; // Primeira questão
-            console.log('Iniciando da primeira questão (etapaAtual era 0 ou undefined)');
-          }
-
-          // Carrega as dicas utilizadas
-          this.dicasUtilizadas = new Map(
-            Object.entries(progresso.dicasUsadas || {}).map(([k, v]) => [Number(k), Number(v)])
-          );
-
-          console.log('Progresso completo carregado:', {
-            etapaAtual: progresso.etapaAtual,
-            etapaDefinida: this.etapa,
-            dicasUsadas: progresso.dicasUsadas,
-            dicasUtilizadasMap: Object.fromEntries(this.dicasUtilizadas)
-          });
-
-          // Força a atualização da view se necessário
-          setTimeout(() => {
-            console.log('Etapa atual após carregamento:', this.etapa);
-            this.cdr.detectChanges();
-          }, 100);
-
-        } else {
-          console.log('Nenhum progresso encontrado, iniciando da primeira questão');
-          this.etapa = 1;
-          this.dicasUtilizadas = new Map();
-        }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar progresso:', err);
-        // Em caso de erro, começa da primeira questão
-        this.etapa = 1;
-        this.dicasUtilizadas = new Map();
-        console.log('Definindo etapa como 1 devido ao erro');
+  async carregarProgresso(): Promise<void> {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.warn('Usuário não autenticado. Não foi possível carregar o progresso.');
+        return;
       }
-    });
+
+      const progresso = await this.treinoService.getProgresso(userId).toPromise();
+      this.progresso = progresso;
+      this.etapaAtual = progresso?.etapaAtual || 0;
+      console.log('Progresso carregado:', this.progresso);
+
+    } catch (error) {
+      console.error('Erro ao carregar progresso do treino:', error);
+    } finally {
+      this.cdr.detectChanges();
+    }
+  }
+
+  async pularIntroducao(): Promise<void> {
+    console.log('Usuário optou por pular a introdução.');
+    await this.onVideoIntroducaoConcluida();
   }
 
   limparDestaques() {
@@ -546,9 +490,6 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
     if (this.mostrarDica) {
       this.atualizarDestaquesDica();
     }
-
-    // Salvar progresso automaticamente a cada interação
-    //this.salvarProgresso();
   }
 
   atualizarDestaquesDica(){
@@ -558,369 +499,6 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
     this.mostrarDica = false;
     this.dicaVisibilidadeSource.next(false);
   }
-
-
-  /*gerarFraseEFala() {
-    if (this.textosSelecionados.length === 0) {
-      this.textoExibido = null;
-      return;
-    }
-
-    // Análise dos componentes selecionados
-    const pronomes = this.palavras.pronomes;
-    const verbos = this.palavras.verbos;
-    const verbosAuxiliares = this.palavras.auxiliares;
-    const negacoes = this.palavras.negacoes;
-    const interrogativas = this.palavras.interrogativas;
-    const conectivos = this.palavras.conectivos;
-    const afirmacoes = this.palavras.afirmacoes;
-    const artigos = this.palavras.artigos;
-    const outros = this.palavras.outros;
-
-    // Encontrar o primeiro pronome e verbo
-    const pronomesSelecionados = this.textosSelecionados.filter(t => pronomes.includes(t));
-    const verbosSelecionados = this.textosSelecionados.filter(t => verbos.includes(t));
-    const negacaoSelecionada = this.textosSelecionados.find(t => negacoes.includes(t));
-    const interrogativaSelecionada = this.textosSelecionados.find(t => interrogativas.includes(t));
-    const comSelecionado = this.textosSelecionados.includes("Com");
-    const conectivoSelecionado = this.textosSelecionados.find(t => conectivos.includes(t));
-    const afirmacaoSelecionada = this.textosSelecionados.find(t => afirmacoes.includes(t));
-    const artigoSelecionado = this.textosSelecionados.find(t => artigos.includes(t));
-    const outroSelecionado = this.textosSelecionados.find(t => outros.includes(t));
-
-    // Verbos em ordem de seleção
-    const verboPrincipal = verbosSelecionados.length > 0 ? verbosSelecionados[0] : undefined;
-    const verboSecundario = verbosSelecionados.length > 1 ? verbosSelecionados[1] : undefined;
-    const verboTerciario = verbosSelecionados.length > 2 ? verbosSelecionados[2] : undefined;
-
-    // Complementos (outros itens que não são pronomes, verbos, etc)
-    const complementos = this.textosSelecionados.filter(
-      t => !pronomes.includes(t) &&
-           !verbos.includes(t) &&
-           !negacoes.includes(t) &&
-           !interrogativas.includes(t) &&
-           !conectivos.includes(t) &&
-           !afirmacoes.includes(t) &&
-           !artigos.includes(t) &&
-           !outros.includes(t)
-    );
-
-    let frase = '';
-
-    // Caso específico para o conectivo "com"
-    if (comSelecionado && pronomesSelecionados.length > 0) {
-      // Índice do conectivo "com" nos textos selecionados
-      const comIndex = this.textosSelecionados.indexOf("Com");
-
-      // Determinar quais pronomes vêm antes e depois do "com"
-      const pronomesAntes = [];
-      const pronomeDepois = [];
-
-      for (const pronome of pronomesSelecionados) {
-        const pronomeIndex = this.textosSelecionados.indexOf(pronome);
-        if (pronomeIndex < comIndex) {
-          pronomesAntes.push(pronome);
-        } else if (pronomeIndex > comIndex) {
-          pronomeDepois.push(pronome);
-        }
-      }
-
-      // Se temos pronomes antes e depois do "com", criamos a frase adequadamente
-      if (pronomesAntes.length > 0 && pronomeDepois.length > 0 && verboPrincipal) {
-        const pronomeAntes = pronomesAntes[0]; // Pegamos o primeiro pronome antes do "com"
-        const verboConjugado = this.conjugacoes[verboPrincipal][pronomeAntes];
-
-        frase = `${pronomeAntes} ${verboConjugado} Com ${pronomeDepois.join(' ')}`;
-
-        // Adicionar complementos, se houver
-        if (complementos.length > 0) {
-          frase += ' ' + complementos.join(' ');
-        }
-
-        this.textoExibido = frase;
-        this.falarTexto(frase);
-        return;
-      }
-    }
-
-    // Frases interrogativas
-    if (interrogativaSelecionada) {
-      frase = `${interrogativaSelecionada} `;
-
-      // CASO ESPECIAL: "Qual" + "Ser" = "Qual seu?"
-      if (interrogativaSelecionada === 'Qual' && verboPrincipal === 'Ser') {
-        frase = 'Qual seu?';
-      }
-
-      else{
-        frase = `${interrogativaSelecionada} `;
-        if (pronomesSelecionados.length > 0) {
-          frase += pronomesSelecionados[0] + ' ';
-        }
-
-        if (negacaoSelecionada) {
-          frase += negacaoSelecionada + ' ';
-        }
-
-        if (verboPrincipal && pronomesSelecionados.length > 0) {
-          const verboConjugado = this.conjugacoes[verboPrincipal][pronomesSelecionados[0]];
-          frase += verboConjugado + ' ';
-
-          if(verboPrincipal === 'Estar'){
-            if (verboSecundario) {
-              const verboGerundio = this.gerundios[verboSecundario];
-              if(verboGerundio) {
-                frase += verboGerundio + ' ';
-
-                if(verboTerciario){
-                  frase += verboTerciario.toLowerCase() + ' ';
-                }
-              }
-            }
-          }
-          else if (verboSecundario) {
-            if (verbosAuxiliares.includes(verboPrincipal)) {
-              frase += verboSecundario.toLowerCase() + ' ';
-
-              if(verboTerciario){
-                frase += verboTerciario.toLowerCase() + ' ';
-              }
-            } else {
-              const verboSecConjugado = this.conjugacoes[verboSecundario][pronomesSelecionados[0]];
-              frase += verboSecConjugado + ' ';
-
-              if(verboTerciario){
-                frase += verboTerciario.toLowerCase() + ' ';
-              }
-            }
-          }
-        } else if (verboPrincipal) {
-          frase += verboPrincipal.toLowerCase() + ' ';
-
-          if (verboSecundario){
-            frase += verboSecundario.toLowerCase() + ' ';
-
-            if(verboTerciario){
-              frase += verboTerciario.toLowerCase() + ' ';
-            }
-          }
-        }
-
-        if (complementos.length > 0) {
-          frase += complementos.join(' ') + ' ';
-        }
-
-        frase = frase.trim() + '?';
-      }
-    }
-    // Frases declarativas com pronome e verbo
-    else if (pronomesSelecionados.length > 0 && verboPrincipal) {
-      // Frases declarativas ou negativas
-      const conjugacoes = pronomesSelecionados.map(pronome => {
-        let fragmento = `${pronome} `;
-        if (negacaoSelecionada) {
-          fragmento += `${negacaoSelecionada} `;
-        }
-
-        // Garante que estamos acessando a conjugação correta para este pronome
-        const verboConjugado = this.conjugacoes[verboPrincipal][pronome];
-        fragmento += verboConjugado + ' ';
-
-        if (verboPrincipal === 'Estar') {
-          if (verboSecundario) {
-            const verboGerundio = this.gerundios[verboSecundario];
-            if (verboGerundio) {
-              fragmento += verboGerundio + ' ';
-
-              if (verboTerciario) {
-                fragmento += verboTerciario.toLowerCase() + ' ';
-              }
-            } else {
-              fragmento += verboSecundario.toLowerCase() + ' ';
-            }
-          }
-        }
-        else if (verboSecundario) {
-          if (verbosAuxiliares.includes(verboPrincipal)) {
-            fragmento += verboSecundario.toLowerCase() + ' ';
-
-            if (verboTerciario) {
-              fragmento += verboTerciario.toLowerCase() + ' ';
-            }
-          } else {
-            const verboSecConjugado = this.conjugacoes[verboSecundario][pronome];
-            fragmento += verboSecConjugado + ' ';
-
-            if (verboTerciario) {
-              fragmento += verboTerciario.toLowerCase() + ' ';
-            }
-          }
-        }
-
-        if (conectivoSelecionado && conectivoSelecionado !== "Com") {
-          fragmento += conectivoSelecionado + ' ';
-        }
-
-        if (complementos.length > 0) {
-          fragmento += complementos.join(' ') + ' ';
-        }
-        return fragmento.trim();
-      });
-
-      frase = conjugacoes.join(' E ');
-    }
-    // Caso com conectivo (exceto "com" que já foi tratado acima)
-    else if (conectivoSelecionado && this.textosSelecionados.length > 0 && conectivoSelecionado !== "Com") {
-      // Reorganizamos a lógica para evitar duplicação do conectivo
-      const textosSemConectivo = this.textosSelecionados.filter(t => t !== conectivoSelecionado);
-      frase = textosSemConectivo.join(' ') + ' ' + conectivoSelecionado;
-
-      if (complementos.length > 0) {
-        frase += ' ' + complementos.join(' ');
-      }
-    }
-    // Caso simples: apenas juntar os textos selecionados
-    else {
-      frase = this.textosSelecionados.join(' ');
-    }
-
-    this.textoExibido = frase;
-    this.falarTexto(frase);
-  }*/
-
-  /*gerarFraseEFala() {
-    if (this.textosSelecionados.length === 0) {
-      this.textoExibido = null;
-      return;
-    }
-
-    const { pronomes, verbos, negacoes, interrogativas, conectivos, afirmacoes, artigos, outros } = this.palavras;
-
-    const pronomesSelecionados = this.textosSelecionados.filter(t => pronomes.includes(t));
-    const verbosSelecionados = this.textosSelecionados.filter(t => verbos.includes(t));
-    const negacaoSelecionada = this.textosSelecionados.find(t => negacoes.includes(t));
-    const interrogativaSelecionada = this.textosSelecionados.find(t => interrogativas.includes(t));
-    const conectivoSelecionado = this.textosSelecionados.find(t => conectivos.includes(t));
-
-    const verboPrincipal = verbosSelecionados[0];
-    const verboSecundario = verbosSelecionados[1];
-    const verboTerciario = verbosSelecionados[2];
-
-    // === ALTERAÇÃO 1: agora complementos INCLUEM tokens de 'outros', 'conectivos', 'afirmacoes', 'artigos'
-    // Mantemos a ordem de seleção; excluímos apenas pronomes / verbos / negações / interrogativas
-    const complementos = this.textosSelecionados.filter(t =>
-      !pronomes.includes(t) &&
-      !verbos.includes(t) &&
-      !negacoes.includes(t) &&
-      !interrogativas.includes(t)
-    );
-    // === FIM ALTERAÇÃO 1
-
-    const lc = (s: string) => s ? s.toLowerCase() : '';
-    const conjugar = (verbo: string, pronome: string) => {
-      // usa o pronome original (ex: "Você", "Eu") para buscar conjugação no this.conjugacoes
-      if (!verbo) return '';
-      const conj = this.conjugacoes[verbo]?.[pronome];
-      return conj ? conj : verbo.toLowerCase();
-    };
-
-    // === ALTERAÇÃO 2: incluí 'de' entre os "locativos/preposições" para que seja tratado antes do verbo secundário
-    const LOCATIVOS = new Set(['de','para','aqui','ali','em cima','embaixo','dentro','fora','embaixo','emcima']);
-    // === FIM ALTERAÇÃO 2
-
-    const complementosLower = complementos.map(c => lc(c));
-    const temLocativo = complementosLower.some(c => LOCATIVOS.has(c));
-
-    let partes: string[] = [];
-
-    // === INTERROGATIVAS (sempre no início) ===
-    if (interrogativaSelecionada) {
-      // caso especial "Qual" + "Ser" -> "Qual seu"
-      if (interrogativaSelecionada === 'Qual' && verboPrincipal === 'Ser') {
-        partes = ['qual', 'seu'];
-      } else {
-        partes.push(lc(interrogativaSelecionada)); // ex: "quando", "onde", "por que", "qual"
-
-        // mostrar pronome mesmo que ainda não exista verbo (resolve "Quando" + "Você")
-        if (pronomesSelecionados.length > 0) {
-          const pronomeOriginal = pronomesSelecionados[0];
-          partes.push(lc(pronomeOriginal));
-        }
-
-        if (negacaoSelecionada) partes.push(lc(negacaoSelecionada));
-
-        // verbo principal conjugado (só se existir)
-        if (verboPrincipal && pronomesSelecionados.length > 0) {
-          const pronomeOriginal = pronomesSelecionados[0];
-          partes.push(conjugar(verboPrincipal, pronomeOriginal)); // já vem em minúscula pelas conjugações
-        } else if (verboPrincipal && pronomesSelecionados.length === 0) {
-          // sem pronome: mostra o verbo no infinitivo/minúsculo (fallback)
-          partes.push(lc(verboPrincipal));
-        }
-
-        // agora posicionamento de complemento vs verbo secundário
-        if (verboSecundario) {
-          if (temLocativo) {
-            // complementos antes do verbo secundário
-            if (complementos.length > 0) partes.push(...complementosLower);
-            partes.push(lc(verboSecundario));
-          } else {
-            // verbo secundário antes dos complementos (ex: "fazer outro")
-            partes.push(lc(verboSecundario));
-            if (complementos.length > 0) partes.push(...complementosLower);
-          }
-          if (verboTerciario) partes.push(lc(verboTerciario));
-        } else {
-          // sem verbo secundário, apenas complementos
-          if (complementos.length > 0) partes.push(...complementosLower);
-        }
-      }
-
-      // monta sem ponto de interrogação (você pediu para remover '?')
-      let frase = partes.join(' ').trim();
-      if (frase.length > 0) frase = frase[0].toUpperCase() + frase.slice(1);
-      this.textoExibido = frase;
-      this.falarTexto(this.textoExibido);
-      return;
-    }
-
-    // === FRASES DECLARATIVAS (pronome + verbo) ===
-    if (pronomesSelecionados.length > 0 && verboPrincipal) {
-      const pronomeOriginal = pronomesSelecionados[0];
-      partes.push(lc(pronomeOriginal));
-
-      if (negacaoSelecionada) partes.push(lc(negacaoSelecionada));
-
-      // verbo principal conjugado
-      partes.push(conjugar(verboPrincipal, pronomeOriginal));
-
-      // complementos antes do verbo secundário se forem locativos (ex: "aqui", "para")
-      if (verboSecundario) {
-        if (temLocativo) {
-          if (complementos.length > 0) partes.push(...complementosLower);
-          partes.push(lc(verboSecundario));
-        } else {
-          partes.push(lc(verboSecundario));
-          if (complementos.length > 0) partes.push(...complementosLower);
-        }
-        if (verboTerciario) partes.push(lc(verboTerciario));
-      } else {
-        if (complementos.length > 0) partes.push(...complementosLower);
-      }
-
-      let frase = partes.join(' ').trim();
-      if (frase.length > 0) frase = frase[0].toUpperCase() + frase.slice(1);
-      this.textoExibido = frase;
-      this.falarTexto(this.textoExibido);
-      return;
-    }
-
-    // === CASO SIMPLES / FALLBACK ===
-    // apenas junta os tokens (mantendo a ordem). Normaliza para lowercase e capitaliza primeira letra.
-    const fallback = this.textosSelecionados.map(t => lc(t)).join(' ').trim();
-    this.textoExibido = fallback.length > 0 ? fallback[0].toUpperCase() + fallback.slice(1) : null;
-    if (this.textoExibido) this.falarTexto(this.textoExibido);
-  }*/
 
  gerarFraseEFala() {
     if (this.textosSelecionados.length === 0) {
@@ -1194,38 +772,6 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
     }, 5000);
   }
 
-  /*irParaProximoExercicio(){
-    console.log(`Etapa ${this.etapa} finalizada:`, {
-      dicasUsadas: this.getQuantidadeDicasUsadas(this.etapa),
-      dicaFoiClicada: this.dicaClicada
-    });
-    this.respostaCorreta.emit();
-    this.limparSelecao();
-    this.dicaClicada = false;
-
-    const token = localStorage.getItem('token');
-    if (!token) return console.error('⚠ Nenhum token encontrado!');
-
-    // Avança etapa
-    this.etapa += 1;
-
-    // Salvar progresso toda vez que avança
-    //this.salvarProgresso();
-    const progresso = {
-      etapaAtual: this.etapa,
-      dicasUsadas: Object.fromEntries(this.dicasUtilizadas)
-      //dicasUsadas: Object.fromEntries(this.getDadosUsoDesDicas().map(d => [d.etapa, d.quantidade]))
-    };
-
-    console.log('Tentando salvar progresso:', progresso);
-
-    this.treinoService.salvarProgresso(token, progresso).subscribe({
-      next: (res) => console.log('Progresso salvo com sucesso', res),
-      error: (err) => console.error('Erro ao salvar progresso', err)
-    });
-
-  }*/
-
   irParaProximoExercicio() {
     this.respostaCorreta.emit();
     this.limparSelecao();
@@ -1250,21 +796,6 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
     });
 
   }
-
-  /*salvarProgresso() {
-    const progresso = {
-      etapaAtual: this.etapa,
-      dicasUsadas: Object.fromEntries(this.getDadosUsoDesDicas().map(d => [d.etapa, d.quantidade]))
-    };
-
-    console.log('Tentando salvar progresso:', progresso);
-
-    this.treinoService.salvarProgresso(progresso).subscribe({
-      next: (res) => console.log('Progresso salvo com sucesso', res),
-      error: (err) => console.error('Erro ao salvar progresso', err)
-    });
-  }*/
-
 
   getTextoDoEnunciadoAtual(): string {
     return new EnunciadosComponent().getEnunciado(this.etapa);

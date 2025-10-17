@@ -7,7 +7,7 @@ import { Observable, map } from 'rxjs';
   providedIn: 'root'
 })
 export class TreinoService {
-  private url = 'http://localhost:3000/api/user'; // rota base da API
+  private url = '/api/user'; // rota base da API
 
   constructor(private http: HttpClient) {}
 
