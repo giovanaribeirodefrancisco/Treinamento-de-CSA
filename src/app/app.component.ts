@@ -94,23 +94,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if(typeof window !== 'undefined'){
       this.usuarioLogado = this.authservice.getusuarioLogado();
     }
-
-    //this.authservice.initAuth();
-    /*this.authservice.mostrarMenuEmitter.subscribe(
-      mostrar => {
-        this.mostrarMenu = mostrar;
-        // Reinicializa sidenav quando o menu é mostrado
-        if (mostrar) {
-          setTimeout(() => this.initSidenav(), 0);
-        }
-      }
-    );
-
-    this.usuarioLogado = this.authservice.getusuarioLogado();*/
   }
 
   ngOnDestroy(){
-
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
@@ -122,7 +108,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       if (event instanceof NavigationEnd && this.mostrarMenu) {
         if(!this.sidenavInstance) {
           setTimeout(() => this.initSidenav(), 200);
-
         }
       }
     });
@@ -132,39 +117,41 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (typeof window !== 'undefined') {
       import('materialize-css').then(M => {
         const elems = document.querySelectorAll('.sidenav');
-        if (elems.length > 0) {
-          // Destruir instâncias existentes para evitar duplicação
-          /*if (this.sidenavInstance) {
-            this.sidenavInstance.forEach((instance: any) => {
-              if (instance && instance.destroy) {
-                instance.destroy();
-              }
-            });
-          }*/
 
-          if (this.sidenavInstance && this.sidenavInstance.destroy) {
-            this.sidenavInstance.destroy();
+        if (elems.length > 0) {
+          // Destruir instância existente para evitar duplicação
+          if (this.sidenavInstance && typeof this.sidenavInstance.destroy === 'function') {
+            try {
+              this.sidenavInstance.destroy();
+            } catch (e) {
+              console.warn('Erro ao destruir sidenav anterior:', e);
+            }
             this.sidenavInstance = null;
           }
 
-          // Inicializar novamente
-           if (!this.sidenavInstance) {
-            this.sidenavInstance = M.Sidenav.init(elems[0], {
-              edge: 'left',
-              draggable: true
-            });
-            console.log('Sidenav inicializado com sucesso');
+          // Inicializar sidenav com validação
+          try {
+            if (M && M.Sidenav && typeof M.Sidenav.init === 'function') {
+              this.sidenavInstance = M.Sidenav.init(elems[0], {
+                edge: 'left',
+                draggable: true
+              });
+              console.log('Sidenav inicializado com sucesso');
+            } else {
+              console.warn('M.Sidenav não está disponível');
+            }
+          } catch (error) {
+            console.error('Erro ao inicializar sidenav:', error);
           }
         }
-      }).catch(err => console.error('Erro ao inicializar sidenav:', err));
+      }).catch(err => console.error('Erro ao importar materialize-css:', err));
     }
   }
 
   // Método para abrir o sidenav programaticamente
   openSidenav() {
-    if (this.sidenavInstance && this.sidenavInstance.open) {
+    if (this.sidenavInstance && typeof this.sidenavInstance.open === 'function') {
       this.sidenavInstance.open();
     }
   }
-
 }
