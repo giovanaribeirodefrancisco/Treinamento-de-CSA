@@ -2,9 +2,6 @@
   "buildCommand": "ng build --configuration production",
   "outputDirectory": "dist/projeto/browser",
   "devCommand": "ng serve",
-  "env": {
-    "MONGODB_URI": "@mongodb_uri"
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
