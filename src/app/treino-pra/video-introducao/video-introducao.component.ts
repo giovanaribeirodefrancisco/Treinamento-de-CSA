@@ -1,4 +1,4 @@
-/*import { Component, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -209,4 +209,4 @@ export class VideoIntroducaoComponent implements AfterViewInit {
   pularVideo() {
     this.videoCompleto.emit();
   }
-}*/
+}

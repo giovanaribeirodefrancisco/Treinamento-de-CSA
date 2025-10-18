@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, QueryList, ViewChildren, AfterViewInit, Renderer2, ChangeDetectorRef } from '@angular/core';
 import { EnunciadosComponent } from "./enunciados/enunciados.component";
-/*import { VideoIntroducaoComponent } from './video-introducao/video-introducao.component';
-import { VideoIntroducaoService } from './video-introducao/video-introducao.service';*/
+import { VideoIntroducaoComponent } from './video-introducao/video-introducao.component';
+import { VideoIntroducaoService } from './video-introducao/video-introducao.service';
 import { BehaviorSubject } from 'rxjs';
 import { OnInit, OnDestroy } from '@angular/core';
 import { TreinoService } from './treino-pra.service';
@@ -10,7 +10,7 @@ import { TreinoService } from './treino-pra.service';
 @Component({
   selector: 'app-treino-pra',
   standalone: true,
-  imports: [CommonModule, EnunciadosComponent, /*VideoIntroducaoComponent*/],
+  imports: [CommonModule, EnunciadosComponent, VideoIntroducaoComponent],
   templateUrl: './treino-pra.component.html',
   styleUrl: './treino-pra.component.scss'
 })
@@ -46,11 +46,11 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
   dicaClicada: boolean = false;
 
   constructor(private renderer: Renderer2, private treinoService: TreinoService, private cdr: ChangeDetectorRef,
-              //private videoService: VideoIntroducaoService
+              private videoService: VideoIntroducaoService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    /*try {
+    try {
       this.carregandoStatusVideo = true;
       console.log('🎬 Iniciando verificação de vídeo...');
 
@@ -83,10 +83,10 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
     } finally {
       this.carregandoStatusVideo = false;
       this.cdr.detectChanges();
-    }*/
+    }
   }
 
-  /*async onVideoIntroducaoConcluida(): Promise<void> {
+  async onVideoIntroducaoConcluida(): Promise<void> {
     try {
       this.mostrarVideoIntroducao = false;
       this.carregandoStatusVideo = true;
@@ -138,7 +138,7 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
   async pularIntroducao(): Promise<void> {
     console.log('Usuário optou por pular a introdução.');
     await this.onVideoIntroducaoConcluida();
-  }*/
+  }
 
   limparDestaques() {
     const elementos = document.querySelectorAll('[data-texto]');

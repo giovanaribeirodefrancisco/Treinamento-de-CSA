@@ -1,4 +1,4 @@
-/*import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, timeout } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -14,7 +14,7 @@ export class VideoIntroducaoService {
 
   /**
    * Verifica se o usuário já assistiu ao vídeo introdutório
-
+   */
   verificarVideoAssistido(userId: string): Observable<boolean> {
     return this.http.get<any>(`${this.API_URL}/video-status?userId=${userId}`).pipe(
       timeout(this.REQUEST_TIMEOUT),
@@ -29,7 +29,7 @@ export class VideoIntroducaoService {
 
   /**
    * Marca o vídeo como assistido
-
+   */
   marcarVideoComoAssistido(userId: string): Observable<boolean> {
     return this.http.post<any>(`${this.API_URL}/video-status`, { userId }).pipe(
       timeout(this.REQUEST_TIMEOUT),
@@ -43,7 +43,7 @@ export class VideoIntroducaoService {
 
   /**
    * Método para verificação local (fallback)
-
+   */
   verificarVideoAssistidoLocal(): boolean {
     if (typeof window === 'undefined') return false;
     try {
@@ -56,6 +56,7 @@ export class VideoIntroducaoService {
 
   /**
    * Marca localmente que o vídeo foi assistido
+   */
   marcarVideoComoAssistidoLocal(): void {
     if (typeof window !== 'undefined') {
       try {
@@ -69,6 +70,7 @@ export class VideoIntroducaoService {
 
   /**
    * Método MELHORADO: Usa com timeout para não ficar eternamente
+   */
   async verificarStatusVideo(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
 
@@ -113,6 +115,7 @@ export class VideoIntroducaoService {
 
   /**
    * Método para marcar como assistido (com fallback)
+   */
   async marcarComoAssistido(): Promise<void> {
     if (typeof window === 'undefined') return;
 
@@ -151,4 +154,3 @@ export class VideoIntroducaoService {
     }
   }
 }
-*/
