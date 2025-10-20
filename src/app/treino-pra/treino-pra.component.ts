@@ -4,7 +4,7 @@ import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, QueryLis
 import { EnunciadosComponent } from "./enunciados/enunciados.component";
 import { VideoIntroducaoComponent } from './video-introducao/video-introducao.component';
 import { VideoIntroducaoService } from './video-introducao/video-introducao.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, timeout } from 'rxjs';
 import { OnInit, OnDestroy } from '@angular/core';
 import { TreinoService } from './treino-pra.service';
 
@@ -50,7 +50,7 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
               private videoService: VideoIntroducaoService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  /*async ngOnInit(): Promise<void> {
     try {
       this.carregandoStatusVideo = true;
       console.log('🎬 Iniciando verificação de vídeo...');
@@ -109,6 +109,63 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('❌ Erro ao marcar vídeo como assistido:', error);
       // Mesmo com erro, prossegue
+      this.carregarProgresso();
+    } finally {
+      this.carregandoStatusVideo = false;
+      this.cdr.detectChanges();
+    }
+  }*/
+
+  async ngOnInit(): Promise<void> {
+    try {
+      this.carregandoStatusVideo = true;
+      console.log('🎬 Iniciando verificação de vídeo...');
+
+      // ✅ Verifica se o vídeo já foi assistido
+      const videoAssistido = await this.videoService.verificarStatusVideo()
+        .pipe(
+          timeout(6000) // Timeout de 6 segundos
+        )
+        .toPromise();
+
+      this.videoJaAssistido = videoAssistido || false;
+      console.log('📊 Vídeo já foi assistido?', this.videoJaAssistido);
+
+      if (!this.videoJaAssistido) {
+        // Mostra o vídeo
+        console.log('📹 Mostrando vídeo introdutório...');
+        this.mostrarVideoIntroducao = true;
+      } else {
+        // Pula direto para o treinamento
+        console.log('⏭️ Pulando vídeo, carregando progresso...');
+        this.carregarProgresso();
+      }
+
+    } catch (error) {
+      console.error('❌ Erro ao verificar vídeo:', error);
+      this.mostrarVideoIntroducao = true;
+    } finally {
+      this.carregandoStatusVideo = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async onVideoIntroducaoConcluida(): Promise<void> {
+    try {
+      this.mostrarVideoIntroducao = false;
+      this.carregandoStatusVideo = true;
+      console.log('✅ Vídeo concluído, marcando como assistido...');
+
+      // ✅ Marca como assistido
+      await this.videoService.marcarComoAssistido()
+        .pipe(timeout(6000))
+        .toPromise();
+
+      console.log('💾 Vídeo marcado! Carregando progresso...');
+      this.carregarProgresso();
+
+    } catch (error) {
+      console.error('❌ Erro:', error);
       this.carregarProgresso();
     } finally {
       this.carregandoStatusVideo = false;
