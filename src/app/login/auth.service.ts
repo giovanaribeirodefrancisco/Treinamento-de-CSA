@@ -101,17 +101,17 @@ export class AuthService {
   fazerLogin(user: any): boolean {
     if (user && (user.id || user._id)) {
       this.usuarioAutenticado = true;
-      
+
       // Gerar token simples (em produção, use JWT)
-      const token = btoa(`${user.email}:${Date.now()}`);
-      localStorage.setItem('token', token);
+      //const token = btoa(`${user.email}:${Date.now()}`);
+      localStorage.setItem('token', user.token);
 
       this.usuarioLogado = {
         id: user.id || user._id,
         username: user.name || user.username,
         email: user.email,
         fotoPerfil: user.fotoPerfil || null,
-        token: token
+        token: user.token
       };
 
       localStorage.setItem("userId", user.id || user._id);

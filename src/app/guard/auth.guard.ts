@@ -1,3 +1,5 @@
+// src/app/guard/auth.guard.ts
+
 import { CanActivateFn, Router} from '@angular/router';
 import { AuthService } from '../login/auth.service';
 import { inject } from '@angular/core';

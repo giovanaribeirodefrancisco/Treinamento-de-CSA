@@ -1,3 +1,4 @@
+// api/cadastro.js
 const { MongoClient } = require('mongodb');
 
 module.exports = async (req, res) => {
@@ -11,14 +12,14 @@ module.exports = async (req, res) => {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       success: false,
-      error: `Método ${req.method} não permitido` 
+      error: `Método ${req.method} não permitido`
     });
   }
 
   const uri = process.env.MONGODB_URI;
-  
+
   if (!uri) {
     return res.status(500).json({
       success: false,
@@ -32,9 +33,9 @@ module.exports = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        error: 'Todos os campos são obrigatórios' 
+        error: 'Todos os campos são obrigatórios'
       });
     }
 
@@ -43,11 +44,11 @@ module.exports = async (req, res) => {
     const users = database.collection('users');
 
     const existingUser = await users.findOne({ email });
-    
+
     if (existingUser) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        error: 'Email já cadastrado' 
+        error: 'Email já cadastrado'
       });
     }
 
@@ -71,9 +72,9 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Erro no cadastro:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
-      error: 'Erro interno do servidor' 
+      error: 'Erro interno do servidor'
     });
   } finally {
     await client.close();

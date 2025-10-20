@@ -1,4 +1,8 @@
+// api/login.js
+
 const { MongoClient } = require('mongodb');
+const jwt = require('jsonwebtoken');
+
 
 module.exports = async (req, res) => {
   // CORS
@@ -11,14 +15,14 @@ module.exports = async (req, res) => {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       success: false,
-      error: `Método ${req.method} não permitido` 
+      error: `Método ${req.method} não permitido`
     });
   }
 
   const uri = process.env.MONGODB_URI;
-  
+
   if (!uri) {
     return res.status(500).json({
       success: false,
@@ -32,9 +36,9 @@ module.exports = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        error: 'Email e senha são obrigatórios' 
+        error: 'Email e senha são obrigatórios'
       });
     }
 
@@ -45,20 +49,20 @@ module.exports = async (req, res) => {
     const user = await users.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        error: 'Email não encontrado' 
+        error: 'Email não encontrado'
       });
     }
 
     if (user.password !== password) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        error: 'Senha incorreta' 
+        error: 'Senha incorreta'
       });
     }
 
-    return res.status(200).json({
+    /*return res.status(200).json({
       success: true,
       message: 'Login realizado com sucesso',
       user: {
@@ -66,13 +70,28 @@ module.exports = async (req, res) => {
         name: user.name,
         email: user.email
       }
+    });*/
+
+    return res.status(200).json({
+      success: true,
+      message: 'Login realizado com sucesso',
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        token: jwt.sign(
+          { id: user._id.toString(), username: user.name },
+          'secretkey',
+          { expiresIn: '24h' }
+        )
+      }
     });
 
   } catch (error) {
     console.error('Erro no login:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
-      error: 'Erro interno do servidor' 
+      error: 'Erro interno do servidor'
     });
   } finally {
     await client.close();

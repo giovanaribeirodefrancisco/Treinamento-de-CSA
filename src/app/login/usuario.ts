@@ -1,3 +1,5 @@
+// src/app/login/usuario.ts
+
 export class Usuario {
 
   id?: number;

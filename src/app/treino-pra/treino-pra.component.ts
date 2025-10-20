@@ -1,3 +1,4 @@
+// src/app/treino-pra/treino-pra.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, QueryList, ViewChildren, AfterViewInit, Renderer2, ChangeDetectorRef } from '@angular/core';
 import { EnunciadosComponent } from "./enunciados/enunciados.component";
@@ -117,19 +118,28 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
 
   async carregarProgresso(): Promise<void> {
     try {
-      const userId = localStorage.getItem('userId');
+      /*const userId = localStorage.getItem('userId');
       if (!userId) {
         console.warn('Usuário não autenticado. Não foi possível carregar o progresso.');
         return;
+      }*/
+
+      //const progresso = await this.treinoService.getProgresso(userId).toPromise();
+      const result = await this.treinoService.getProgresso().toPromise();
+
+      if (!result || !result.progresso) {
+        console.warn('Nenhum progresso encontrado para o usuário.');
+        this.etapaAtual = 1;
+        return;
       }
 
-      const progresso = await this.treinoService.getProgresso(userId).toPromise();
-      this.progresso = progresso;
-      this.etapaAtual = progresso?.etapaAtual || 0;
+      this.progresso = result.progresso;
+      this.etapaAtual = result.progresso?.etapaAtual || 1;
       console.log('Progresso carregado:', this.progresso);
 
     } catch (error) {
       console.error('Erro ao carregar progresso do treino:', error);
+      this.etapaAtual = 1;
     } finally {
       this.cdr.detectChanges();
     }
@@ -812,7 +822,11 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
 
     console.log('Tentando salvar progresso:', progresso);
 
-    this.treinoService.salvarProgresso(token, progresso).subscribe({
+    /*this.treinoService.salvarProgresso(token, progresso).subscribe({
+      next: (res) => console.log('Progresso salvo com sucesso', res),
+      error: (err) => console.error('Erro ao salvar progresso', err)
+    });*/
+    this.treinoService.salvarProgresso(progresso).subscribe({
       next: (res) => console.log('Progresso salvo com sucesso', res),
       error: (err) => console.error('Erro ao salvar progresso', err)
     });
