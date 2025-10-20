@@ -39,7 +39,10 @@ module.exports = async (req, res) => {
     if (mongoose.connection.readyState === 0) {
       await mongoose.connect(mongoUri, {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 30000,
+        connectTimeoutMS: 10000,
+        socketTimeoutMS: 45000
       });
       console.log('✅ Conectado ao MongoDB');
     }

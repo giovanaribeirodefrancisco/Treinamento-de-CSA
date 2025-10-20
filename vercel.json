@@ -15,5 +15,14 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "MONGODB_URI": "@mongodb_uri"
+  },
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 60,
+      "memory": 3008
+    }
+  }
 }
