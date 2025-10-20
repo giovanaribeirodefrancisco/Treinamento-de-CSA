@@ -15,7 +15,6 @@ module.exports = async (req, res) => {
   try {
     await connectDB();
 
-    // Extrai o token do header
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
@@ -25,7 +24,6 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Valida o token
     let verified;
     try {
       verified = jwt.verify(token, 'secretkey');
@@ -36,7 +34,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    // GET - Verificar se assistiu
+    // GET - Verificar status
     if (req.method === 'GET') {
       const user = await User.findById(verified.id);
 
@@ -65,7 +63,6 @@ module.exports = async (req, res) => {
         });
       }
 
-      // Marca como assistido
       user.videoIntroducaoAssistido = true;
       user.dataVideoAssistido = new Date();
 
@@ -84,7 +81,7 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erro em /api/video-introducao:', error);
+    console.error('❌ Erro em /api/video-introducao:', error);
     return res.status(500).json({
       sucesso: false,
       mensagem: error.message
