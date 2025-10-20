@@ -1,10 +1,13 @@
 // api/login.js
-const User = require('../backend/models/user');
-const connectDB = require('../backend/config/database');
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+// Importa o modelo User
+const User = require('../backend/models/user');
+
 module.exports = async (req, res) => {
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -22,12 +25,30 @@ module.exports = async (req, res) => {
 
   try {
     // Conecta ao MongoDB
-    await connectDB();
+    const mongoUri = process.env.MONGODB_URI;
+
+    if (!mongoUri) {
+      console.error('❌ MONGODB_URI não está configurado');
+      return res.status(500).json({
+        success: false,
+        message: 'MONGODB_URI não configurado'
+      });
+    }
+
+    // Verifica se já está conectado
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(mongoUri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      });
+      console.log('✅ Conectado ao MongoDB');
+    }
 
     const { email, password } = req.body;
 
-    console.log('🔐 Tentando login com email:', email);
+    console.log('🔐 Login attempt:', email);
 
+    // Validação
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -46,25 +67,28 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Valida a senha
+    // Valida senha
     const senhaValida = await bcrypt.compare(password, user.password);
 
     if (!senhaValida) {
-      console.log('❌ Senha incorreta para:', email);
+      console.log('❌ Senha incorreta');
       return res.status(401).json({
         success: false,
         message: 'Senha incorreta'
       });
     }
 
-    // Gera o token JWT
+    // Gera token
     const token = jwt.sign(
-      { id: user._id.toString(), username: user.username },
+      {
+        id: user._id.toString(),
+        username: user.username
+      },
       'secretkey',
       { expiresIn: '24h' }
     );
 
-    console.log('✅ Login bem-sucedido para:', email);
+    console.log('✅ Login bem-sucedido:', email);
 
     return res.status(200).json({
       success: true,
