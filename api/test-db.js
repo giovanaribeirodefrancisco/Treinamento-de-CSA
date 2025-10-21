@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+/*const { MongoClient } = require('mongodb');
 
 module.exports = async (req, res) => {
   const uri = process.env.MONGODB_URI;
@@ -33,4 +33,4 @@ module.exports = async (req, res) => {
   } finally {
     await client.close();
   }
-};
+};*/
