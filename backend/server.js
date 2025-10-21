@@ -1,4 +1,5 @@
 // server.js
+require('dotenv').config(); // Carregar variáveis de ambiente do .env
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
@@ -238,6 +239,132 @@ app.post('/api/user/marcar-video-assistido', auth, async (req, res) => {
 
     } catch (error) {
         console.error('Erro ao marcar vídeo como assistido:', error);
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: error.message
+        });
+    }
+});
+
+// Rota unificada /api/video-introducao (para compatibilidade com o frontend)
+app.all('/api/video-introducao', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: 'Usuário não encontrado'
+            });
+        }
+
+        // GET - Verificar status
+        if (req.method === 'GET') {
+            return res.json({
+                sucesso: true,
+                videoIntroducaoAssistido: user.videoIntroducaoAssistido || false,
+                dataAssistido: user.dataVideoAssistido || null
+            });
+        }
+
+        // POST - Marcar como assistido
+        if (req.method === 'POST') {
+            user.videoIntroducaoAssistido = true;
+            user.dataVideoAssistido = new Date();
+            await user.save();
+
+            return res.json({
+                sucesso: true,
+                mensagem: 'Vídeo marcado como assistido',
+                dataAssistido: user.dataVideoAssistido
+            });
+        }
+
+        return res.status(405).json({
+            sucesso: false,
+            mensagem: 'Método não permitido'
+        });
+
+    } catch (error) {
+        console.error('Erro em /api/video-introducao:', error);
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: error.message
+        });
+    }
+});
+
+// Rota unificada /api/progress (para compatibilidade com o frontend)
+app.all('/api/progress', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: 'Usuário não encontrado'
+            });
+        }
+
+        // GET - Buscar progresso
+        if (req.method === 'GET') {
+            const progresso = user.progresso || {
+                etapaAtual: 1,
+                treinoProgresso: 0,
+                dicasUsadas: {}
+            };
+
+            // Corrigir etapa se for 0
+            if (progresso.etapaAtual === 0) {
+                progresso.etapaAtual = 1;
+            }
+
+            // Converter Map para Object se necessário
+            if (progresso.dicasUsadas instanceof Map) {
+                progresso.dicasUsadas = Object.fromEntries(progresso.dicasUsadas);
+            }
+
+            return res.status(200).json({
+                sucesso: true,
+                progresso: progresso
+            });
+        }
+
+        // POST - Salvar progresso
+        if (req.method === 'POST') {
+            const { etapaAtual, treinoProgresso, dicasUsadas } = req.body;
+
+            if (!user.progresso) {
+                user.progresso = {
+                    etapaAtual: 0,
+                    treinoProgresso: 0,
+                    dicasUsadas: {}
+                };
+            }
+
+            if (etapaAtual !== undefined) user.progresso.etapaAtual = etapaAtual;
+            if (treinoProgresso !== undefined) user.progresso.treinoProgresso = treinoProgresso;
+            if (dicasUsadas !== undefined) user.progresso.dicasUsadas = dicasUsadas;
+
+            user.markModified('progresso');
+            await user.save();
+
+            console.log('✅ Progresso salvo:', user.progresso);
+
+            return res.status(200).json({
+                sucesso: true,
+                mensagem: 'Progresso salvo com sucesso',
+                progresso: user.progresso
+            });
+        }
+
+        return res.status(405).json({
+            sucesso: false,
+            mensagem: 'Método não permitido'
+        });
+
+    } catch (error) {
+        console.error('❌ Erro em /api/progress:', error);
         return res.status(500).json({
             sucesso: false,
             mensagem: error.message
