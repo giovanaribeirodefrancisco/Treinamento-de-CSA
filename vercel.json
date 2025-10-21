@@ -1,7 +1,6 @@
 {
   "buildCommand": "ng build --configuration production",
   "outputDirectory": "dist/projeto/browser",
-  "devCommand": "ng serve",
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -15,14 +14,5 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "env": {
-    "MONGODB_URI": "@mongodb_uri"
-  },
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 60,
-      "memory": 3008
-    }
-  }
+  ]
 }
