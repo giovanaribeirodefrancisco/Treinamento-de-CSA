@@ -82,12 +82,13 @@ module.exports = async (req, res) => {
     }
 
     // Gera token
+    const jwtSecret = process.env.JWT_SECRET || 'secretkey';
     const token = jwt.sign(
       {
         id: user._id.toString(),
         username: user.username
       },
-      'secretkey',
+      jwtSecret,
       { expiresIn: '24h' }
     );
 
