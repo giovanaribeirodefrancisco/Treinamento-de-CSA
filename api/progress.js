@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
     // Valida token
     let verified;
     try {
-      verified = jwt.verify(token, 'secretkey');
+      verified = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
     } catch (err) {
       return res.status(401).json({
         sucesso: false,
