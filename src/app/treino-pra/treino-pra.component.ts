@@ -187,16 +187,28 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
       if (!result || !result.progresso) {
         console.warn('Nenhum progresso encontrado para o usuário.');
         this.etapaAtual = 1;
+        this.etapa = 1;
         return;
       }
 
       this.progresso = result.progresso;
       this.etapaAtual = result.progresso?.etapaAtual || 1;
-      console.log('Progresso carregado:', this.progresso);
+      this.etapa = this.etapaAtual; // ✅ ATUALIZA A ETAPA PARA CONTINUAR DE ONDE PAROU
+
+      // Restaurar dicas utilizadas se existirem (converter string keys para number)
+      if (result.progresso?.dicasUsadas) {
+        this.dicasUtilizadas = new Map(
+          Object.entries(result.progresso.dicasUsadas).map(([key, value]) => [Number(key), value as number])
+        );
+      }
+
+      console.log('✅ Progresso carregado! Continuando da etapa:', this.etapa);
+      console.log('Dicas utilizadas:', this.dicasUtilizadas);
 
     } catch (error) {
       console.error('Erro ao carregar progresso do treino:', error);
       this.etapaAtual = 1;
+      this.etapa = 1;
     } finally {
       this.cdr.detectChanges();
     }

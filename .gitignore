@@ -40,3 +40,13 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Backend
+backend/node_modules/
+backend/package-lock.json
+backend/.env
+
+# Environment variables (IMPORTANTE: nunca commitar credenciais!)
+.env
+.env.local
+.env.*.local
