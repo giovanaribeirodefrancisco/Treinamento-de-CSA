@@ -262,7 +262,7 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
       if (this.textosSelecionados.length === 0) {
         this.pictogramaCorreto = 'Qual';
       } else if (this.textosSelecionados.length === 1 && this.textosSelecionados[0] === 'Qual') {
-        this.pictogramaCorreto = 'Ser';
+        this.pictogramaCorreto = 'Seu ou Sua';
       }
     } else if (this.etapa === 4) {
       if (this.textosSelecionados.length === 0) {
@@ -830,7 +830,7 @@ export class TreinoPraComponent implements OnInit, OnDestroy {
 
     if ((this.etapa === 1 && this.ehCorreta(respostaUsuario, ['Você', 'Querer', 'Ajuda'])) ||
         (this.etapa === 2 && this.ehCorreta(respostaUsuario, ['Eu', 'Ser'])) ||
-        (this.etapa === 3 && this.ehCorreta(respostaUsuario,  ['Qual', 'Ser'])) || // Qual seu
+        (this.etapa === 3 && this.ehCorreta(respostaUsuario,  ['Qual', 'Seu ou Sua'])) || // Qual seu
         (this.etapa === 4 && this.ehCorreta(respostaUsuario, ['Não', 'Pode', 'Conversar'])) ||
         (this.etapa === 5 && this.ehCorreta(respostaUsuario, ['Quem', 'Querer', 'Sair', 'Pode', 'Ajuda'])) ||
         (this.etapa === 6 && this.ehCorreta(respostaUsuario, ['Eu', 'Estar', 'Aqui', 'para', 'Ajuda', 'Você'])) || // Eu estou para ajuda você
