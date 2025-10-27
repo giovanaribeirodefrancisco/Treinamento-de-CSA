@@ -1,7 +1,7 @@
 // Seus estilos existentes
 .nav-wrapper {
   position: fixed;
-  height: 12vh;
+  height: auto; // height: 12vh;
   background-color: #104978;
   top: 0;
   left: 0;
@@ -10,7 +10,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30px;
+  padding: 15px 30px; //padding: 0 30px;
   margin-bottom: 0;
 }
 
@@ -80,7 +80,7 @@ nav ul li a {
 }
 
 .container {
-  margin-top: 20px;
+  //margin-top: 20px;
 
   // Oculta o conteúdo do router quando estamos na página dos cartões
   &.hide-router {
