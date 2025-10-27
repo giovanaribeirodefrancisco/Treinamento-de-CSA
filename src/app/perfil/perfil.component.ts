@@ -1,3 +1,5 @@
+// perfil.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -82,14 +84,14 @@ export class PerfilComponent implements OnInit {
   }
 
   comprimirImagem(src: string, maxWidth: number, maxHeight: number, callback: (result: string) => void): void {
-    
+
     if (typeof window !== 'undefined'){
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
-  
+
         // Calcula novas dimensões mantendo proporção
         if (width > height) {
           if (width > maxWidth) {
@@ -102,13 +104,13 @@ export class PerfilComponent implements OnInit {
             height = maxHeight;
           }
         }
-  
+
         canvas.width = width;
         canvas.height = height;
-  
+
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
-  
+
         // Converte para base64 com qualidade reduzida
         const imagemComprimida = canvas.toDataURL('image/jpeg', 0.7);
         callback(imagemComprimida);

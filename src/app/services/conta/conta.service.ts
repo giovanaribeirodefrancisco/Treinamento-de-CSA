@@ -9,7 +9,9 @@ import { Observable } from 'rxjs';
 })
 export class ContaService {
 
-  private readonly apiUrl = 'http://localhost:3000/api';
+  //private readonly apiUrl = 'http://localhost:3000/api';
+
+  private readonly apiUrl = '/api';
 
   constructor(private readonly http: HttpClient) { }
 

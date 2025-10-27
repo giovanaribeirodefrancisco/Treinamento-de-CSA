@@ -20,6 +20,8 @@ export class AuthService {
 
   private readonly apiUrl = '/api';
 
+  //private readonly apiUrl = process.env['NG_APP_API_URL'] || '/api';
+
   constructor(private readonly router: Router, private readonly http: HttpClient) {
     this.verificarAutenticacao();
   }
