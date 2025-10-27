@@ -1,4 +1,4 @@
-// api/usuarios.js
+// api/usuarios/[id].js
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -75,29 +75,6 @@ userSchema.pre('save', function(next) {
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-// Middleware de autenticação
-const auth = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: 'Acesso negado. Token não fornecido.'
-        });
-    }
-
-    try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
-        req.user = { id: verified.id, username: verified.username };
-        next();
-    } catch (err) {
-        return res.status(400).json({
-            success: false,
-            message: 'Token inválido'
-        });
-    }
-};
-
 // Função para conectar ao MongoDB
 const connectDB = async () => {
     if (mongoose.connections[0].readyState) return;
@@ -138,13 +115,15 @@ export default async function handler(req, res) {
         const { id } = req.query;
         const method = req.method;
 
+        console.log(`[${method}] /api/usuarios/${id}`);
+
         // PUT - Atualizar perfil do usuário
-        if (method === 'PUT' && id) {
+        if (method === 'PUT') {
             return handlePutUsuario(req, res, id);
         }
 
         // GET - Buscar um usuário por ID
-        if (method === 'GET' && id) {
+        if (method === 'GET') {
             return handleGetUsuario(req, res, id);
         }
 

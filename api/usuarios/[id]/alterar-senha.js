@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-// Modelo do usuário (mesmo do arquivo anterior)
+// Modelo do usuário
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -115,8 +115,10 @@ export default async function handler(req, res) {
         const { id } = req.query;
         const method = req.method;
 
+        console.log(`[${method}] /api/usuarios/${id}/alterar-senha`);
+
         // PUT - Alterar senha do usuário
-        if (method === 'PUT' && id) {
+        if (method === 'PUT') {
             return handleAlterarSenha(req, res, id);
         }
 
