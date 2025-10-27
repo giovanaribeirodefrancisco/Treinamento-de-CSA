@@ -1,7 +1,6 @@
-// src/app/treino-pra/video-introducao/video-introducao.component.ts
-
-import { Component, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { VideoIntroducaoService } from './video-introducao.service';
 
 @Component({
   selector: 'app-video-introducao',
@@ -15,13 +14,26 @@ import { CommonModule } from '@angular/common';
           Assista ao vídeo abaixo para entender como funciona esta área do treinamento prático.
         </p>
         <br>
+
+        <!-- Carregando vídeo do Blob -->
+        <div class="loading-indicator" *ngIf="carregandoVideo">
+          <p>Carregando vídeo...</p>
+        </div>
+
+        <!-- Erro ao carregar -->
+        <div class="erro-container" *ngIf="erroVideo">
+          <p class="erro-mensagem">❌ {{ erroVideo }}</p>
+        </div>
+
+        <!-- Vídeo -->
         <video
           #videoPlayer
           class="intro-video"
           controls
           (ended)="onVideoEnded()"
           (loadedmetadata)="onVideoLoaded()"
-          (error)="onVideoError($event)">
+          (error)="onVideoError($event)"
+          *ngIf="videoUrl && !carregandoVideo">
           <source [src]="videoUrl" type="video/mp4">
           <p>Seu navegador não suporta vídeos HTML5.</p>
         </video>
@@ -30,13 +42,14 @@ import { CommonModule } from '@angular/common';
           <button
             class="btn-pular"
             (click)="pularVideo()"
-            [disabled]="!videoLoaded">
+            [disabled]="!videoLoaded || carregandoVideo">
             Pular Introdução
           </button>
         </div>
 
-        <div class="loading-indicator" *ngIf="!videoLoaded">
-          <p>Carregando vídeo...</p>
+        <!-- Status de assistido -->
+        <div class="status-container" *ngIf="statusAssistido">
+          <p class="status-message">✅ Vídeo marcado como assistido em {{ dataAssistido | date: 'dd/MM/yyyy HH:mm' }}</p>
         </div>
       </div>
     </div>
@@ -137,6 +150,34 @@ import { CommonModule } from '@angular/common';
       margin-left: 10px;
     }
 
+    .erro-container {
+      background: #ffebee;
+      color: #c62828;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #ef5350;
+    }
+
+    .erro-mensagem {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .status-container {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid #4caf50;
+    }
+
+    .status-message {
+      margin: 0;
+      font-weight: 500;
+    }
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -173,42 +214,121 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class VideoIntroducaoComponent implements AfterViewInit {
+export class VideoIntroducaoComponent implements OnInit, AfterViewInit {
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
   @Output() videoCompleto = new EventEmitter<void>();
 
   videoLoaded = false;
-  videoUrl = '/assets/videos/introducao-treino-pratico.mp4';
+  videoUrl = 'assets/videos/introducao-treino-pratico.mp4';
+  carregandoVideo = true;
+  erroVideo = '';
+  statusAssistido = false;
+  dataAssistido: Date | null = null;
+
+  constructor(private videoService: VideoIntroducaoService) {}
+
+  ngOnInit() {
+    this.carregarVideo();
+    this.verificarStatus();
+  }
 
   ngAfterViewInit() {
-    const video = this.videoPlayer.nativeElement;
-
-    video.onloadedmetadata = () => {
-      this.videoLoaded = true;
-      console.log('Video metadata carregado');
-    };
+    if (this.videoPlayer) {
+      const video = this.videoPlayer.nativeElement;
+      video.onloadedmetadata = () => {
+        this.videoLoaded = true;
+        console.log('✅ Video metadata carregado');
+      };
+    }
   }
 
+  /**
+   * Carrega a URL do vídeo do Vercel Blob
+   */
+  carregarVideo(): void {
+    this.videoService.obterVideoUrl().subscribe({
+      next: (url) => {
+        this.videoUrl = url;
+        this.carregandoVideo = false;
+        console.log('✅ Vídeo carregado do Blob');
+      },
+      error: (error) => {
+        //console.error('❌ Erro ao carregar vídeo:', error);
+        //this.erroVideo = 'Erro ao carregar vídeo: ' + (error.message || 'Tente novamente');
+        this.carregandoVideo = false;
+      }
+    });
+  }
+
+  /**
+   * Verifica se o usuário já assistiu o vídeo
+   */
+  verificarStatus(): void {
+    this.videoService.obterStatusCompleto().subscribe({
+      next: (status) => {
+        this.statusAssistido = status.assistido;
+        this.dataAssistido = status.data;
+        console.log('✅ Status do vídeo:', status);
+      },
+      error: (error) => {
+        console.warn('⚠️ Não foi possível verificar status:', error);
+      }
+    });
+  }
+
+  /**
+   * Marca o vídeo como assistido quando termina
+   */
+  onVideoEnded() {
+    console.log('✅ Vídeo finalizado');
+    this.videoService.marcarComoAssistido().subscribe({
+      next: () => {
+        this.statusAssistido = true;
+        this.dataAssistido = new Date();
+        console.log('✅ Vídeo marcado como assistido');
+      },
+      error: (error) => {
+        console.error('❌ Erro ao marcar vídeo:', error);
+      }
+    });
+
+    setTimeout(() => {
+      this.videoCompleto.emit();
+    }, 2000);
+  }
+
+  /**
+   * Marca como assistido e emite evento quando o usuário pula
+   */
+  pularVideo() {
+    console.log('Usuário pulou o vídeo');
+    this.videoService.marcarComoAssistido().subscribe({
+      next: () => {
+        console.log('✅ Vídeo marcado como assistido (pulado)');
+      },
+      error: (error) => {
+        console.error('❌ Erro ao marcar vídeo:', error);
+      }
+    });
+    this.videoCompleto.emit();
+  }
+
+  /**
+   * Trata erro ao carregar o vídeo
+   */
   onVideoLoaded() {
     this.videoLoaded = true;
-    console.log('Video totalmente carregado');
+    console.log('✅ Video totalmente carregado');
   }
 
+  /**
+   * Trata erro de reprodução
+   */
   onVideoError(event: any) {
-    console.error('Erro ao carregar vídeo:', event);
-    setTimeout(() => {
-      console.warn('Não foi possível carregar o vídeo, pulando...');
-      this.videoCompleto.emit();
-    }, 2000);
-  }
-
-  onVideoEnded() {
+    //console.error('❌ Erro ao carregar vídeo:', event);
+    this.erroVideo = 'Erro ao reproduzir vídeo. Pulando...';
     setTimeout(() => {
       this.videoCompleto.emit();
     }, 2000);
-  }
-
-  pularVideo() {
-    this.videoCompleto.emit();
   }
 }

@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "treinamento-professores-caa",
     "public": "dist/projeto/browser",
     "ignore": [
       "firebase.json",
@@ -12,5 +13,6 @@
         "destination": "/index.html"
       }
     ]
+
   }
 }
