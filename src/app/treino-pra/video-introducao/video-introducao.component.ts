@@ -1,3 +1,5 @@
+// src/app/treino-pra/video-introducao/video-introducao.component.ts
+
 import { Component, EventEmitter, Output, ViewChild, ElementRef, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VideoIntroducaoService } from './video-introducao.service';

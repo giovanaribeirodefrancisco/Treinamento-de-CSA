@@ -1,3 +1,5 @@
+// api/get-video-url.js
+
 const { list } = require('@vercel/blob');
 const jwt = require('jsonwebtoken');
 const User = require('../backend/models/user');
@@ -49,7 +51,7 @@ module.exports = async (req, res) => {
 
     // Listar vídeos no Blob (você pode especificar um prefixo como 'videos/')
     const { blobs } = await list({
-      prefix: 'videos/' // Todos os vídeos serão guardados em uma pasta 'videos/'
+      //prefix: 'videos/' // Todos os vídeos serão guardados em uma pasta 'videos/'
     });
 
     // Retornar os vídeos disponíveis
