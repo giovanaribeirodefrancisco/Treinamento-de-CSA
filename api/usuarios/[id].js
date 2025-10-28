@@ -92,18 +92,16 @@ const connectDB = async () => {
 
 // Handler da Serverless Function
 export default async function handler(req, res) {
-    // CORS
+    // CORS headers - IMPORTANTE para PUT funcionar
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
-    );
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, Accept');
+    res.setHeader('Access-Control-Max-Age', '86400'); // Cache preflight por 24h
 
+    // Responde OPTIONS imediatamente (preflight)
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
 
     try {
