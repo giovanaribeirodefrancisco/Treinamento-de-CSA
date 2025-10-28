@@ -91,7 +91,7 @@ const connectDB = async () => {
 };
 
 // Handler da Serverless Function
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
     // CORS headers - IMPORTANTE para PUT funcionar
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
